@@ -95,12 +95,12 @@ Rational operator-(Rational const &l, Rational const &r)
     }
 }
 
-Rational operator*(Rational const&l, Rational const&r)
+Rational operator*(Rational const &l, Rational const &r)
 {
     return Rational{l.num() * r.num(), l.den() * r.den()};
 }
 
-Rational operator/(Rational const&l, Rational const&r)
+Rational operator/(Rational const &l, Rational const &r)
 {
     return Rational{l.num() * r.den(), l.den() * r.num()};
 }
