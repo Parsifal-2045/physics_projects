@@ -17,18 +17,6 @@ public:
     double imag() const { return i; }
 };
 
-// Funzioni
-
-double norm(Complex a)
-{
-    return (a.real() * a.real()) + (a.imag() * a.imag());
-}
-
-Complex conj(Complex a)
-{
-    return Complex{a.real(), -a.imag()};
-}
-
 // Operatori
 
 bool operator==(Complex const &l, Complex const &r)
@@ -51,18 +39,11 @@ Complex operator-(Complex const &l, Complex const &r)
     return Complex{l.real() - r.real(), l.imag() - r.imag()};
 }
 
-auto operator*(Complex const &l, Complex const &r)
+Complex operator*(Complex const &l, Complex const &r)
 {
-    if (l == conj(r))
-    {
-        double c = norm(l) * norm(l);
-        return c;
-    }
-
-    if (l != conj(r))
-    {
-        return Complex{l.real() * r.real(), l.imag() * r.imag()};
-    }
+    double real = (l.real() * r.real()) - (l.imag() * r.imag());
+    double imag = (l.real() * r.imag()) + (l.imag() * r.real());
+    return Complex{real, imag};
 }
 
 Complex operator/(Complex const &l, Complex const &r)
@@ -75,7 +56,17 @@ Complex operator/(Complex const &l, Complex const &r)
         return 0;
 }
 
+// Funzioni
 
+double norm(Complex a)
+{
+    return (a.real() * a.real()) + (a.imag() * a.imag());
+}
+
+Complex conj(Complex a)
+{
+    return Complex{a.real(), -a.imag()};
+}
 
 TEST_CASE("Testing Complex")
 {
@@ -85,14 +76,14 @@ TEST_CASE("Testing Complex")
     Complex c3 = {3, 3};
     Complex c4 = {4, 4};
     Complex c6 = {6, 6};
-    Complex c7 = {-4, -4};
+    Complex c7 = {1, -1};
     CHECK(c0 + c1 == c1);
     CHECK(c1 + c2 == c3);
     CHECK(c3 - c2 == c1);
     CHECK(c6 - c2 == c4);
-    CHECK(c2 - c6 == c7);
-    CHECK(c0 * c2 == c0);
-    CHECK(c2 * c3 == c6);
+    CHECK(c1 * c7 == Complex{2, 0});
+    CHECK(c1 * c2 == Complex{0, 4});
+    CHECK(c2 * c3 == Complex{0, 12});
     CHECK(c6 / c1 == c6);
     CHECK(c6 / c3 == c2);
     CHECK(c6 / c2 == c3);
