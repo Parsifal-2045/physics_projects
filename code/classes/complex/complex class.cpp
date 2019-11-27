@@ -48,12 +48,10 @@ Complex operator*(Complex const &l, Complex const &r)
 
 Complex operator/(Complex const &l, Complex const &r)
 {
-    if (r.real() != 0 && r.imag() != 0)
-    {
-        return Complex{l.real() / r.real(), l.imag() / r.imag()};
-    }
-    else
-        return 0;
+   double nr = (l.real() * r.real()) + (l.imag() * r.imag());
+   double ni = (l.imag() * r.real()) - (l.real() * r.imag());
+   double d = (r.real() * r.real()) + (r.imag() * r.imag());
+   return Complex{nr / d, ni / d};
 }
 
 // Funzioni
@@ -84,10 +82,7 @@ TEST_CASE("Testing Complex")
     CHECK(c1 * c7 == Complex{2, 0});
     CHECK(c1 * c2 == Complex{0, 4});
     CHECK(c2 * c3 == Complex{0, 12});
-    CHECK(c6 / c1 == c6);
-    CHECK(c6 / c3 == c2);
-    CHECK(c6 / c2 == c3);
-    CHECK(c6 / c0 == 0);
+    CHECK(c1 / c7 == Complex{0, 1});
 }
 
 TEST_CASE("Testing functions")
