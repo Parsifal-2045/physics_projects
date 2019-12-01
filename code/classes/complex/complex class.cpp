@@ -56,12 +56,12 @@ Complex operator/(Complex const &l, Complex const &r)
 
 // Funzioni
 
-double norm(Complex a)
+double norm(Complex const &a)
 {
     return (a.real() * a.real()) + (a.imag() * a.imag());
 }
 
-Complex conj(Complex a)
+Complex conj(Complex const &a)
 {
     return Complex{a.real(), -a.imag()};
 }
