@@ -1,5 +1,5 @@
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
-#include "doctest.h"
+#include <doctest.h>
 #include <stdexcept>
 
 int gcd(int a, int b) // Funzione massimo comun divisore
