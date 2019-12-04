@@ -65,6 +65,11 @@ bool operator==(Rational const &l, Rational const &r)
     return l.num() == r.num() && l.den() == r.den();
 }
 
+bool operator!=(Rational const &l, Rational const &r)
+{
+    return !(l == r);
+}
+
 Rational operator+(Rational const &l, Rational const &r)
 {
     if (l.den() == r.den())
@@ -114,6 +119,7 @@ TEST_CASE("testing Rational")
     CHECK(r2 == r4);
     CHECK(r3 == r4);
     CHECK(r2 == r4);
+    CHECK(r1 != r2);
     CHECK(r2 + r3 == r1);
     Rational r5 = {2, 3};
     Rational r6 = {7, 6};
