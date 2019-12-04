@@ -48,6 +48,20 @@ vector operator/(vector const &v, double const &a)
     return vector{v.x1() / a, v.x2() / a, v.x3() / a};
 }
 
+vector operator%(vector const &l, vector const &r)
+{
+    double a = l.x1();
+    double b = l.x2();
+    double c = l.x3();
+    double d = r.x1();
+    double e = r.x2();
+    double f = r.x3();
+    double x = (b * f) - (c * e);
+    double y = (c * d) - (a * f);
+    double z = (a * e) - (b * d);
+    return vector{x,y,z};
+}
+
 double operator*(vector const &l, vector const &r)
 {
     double a = l.x1() * r.x1();
@@ -91,4 +105,6 @@ TEST_CASE("Testing vector")
     CHECK(norm(v0) == 0);
     CHECK(norm (vector{2,0,0}) == 2);
     CHECK(norm(vector{1,0,0} == 1));
+    CHECK(vector{1,-1,2} % vector{1,2,3} == vector{-7,-1,3});
+    CHECK(v1 % v2 == v0);
 }
