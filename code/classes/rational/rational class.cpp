@@ -1,5 +1,6 @@
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 #include "doctest.h"
+#include <stdexcept>
 
 int gcd(int a, int b) // Funzione massimo comun divisore
 {
@@ -43,6 +44,11 @@ class Rational
 public:
     Rational(int num = 0, int den = 1) : n_num{num}, n_den{den}
     {
+        if (den == 0)
+        {
+            throw std::runtime_error{"denominator is zero"};
+        }
+
         if (den < 0)
         {
             num = -num;
@@ -121,6 +127,7 @@ TEST_CASE("testing Rational")
     CHECK(r2 == r4);
     CHECK(r1 != r2);
     CHECK(r2 + r3 == r1);
+    CHECK_THROWS((Rational{0,0}));
     Rational r5 = {2, 3};
     Rational r6 = {7, 6};
     Rational r7 = {1, 6};
