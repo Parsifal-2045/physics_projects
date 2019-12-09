@@ -13,8 +13,13 @@ public:
     double r() const { return n_r; }
 };*/
 
-class DivideByZero{};
-struct InvalidOperator{char op;};
+class DivideByZero
+{
+};
+struct InvalidOperator
+{
+    char op;
+};
 
 double compute(char op, double const &l, double const &r)
 {
@@ -49,16 +54,23 @@ double compute(char op, double const &l, double const &r)
 
 int main()
 {
-    try
+    char op;
+    double l;
+    double r;
+    while (std::cin >> l >> op >> r)
     {
-        compute('_', 1, 0);
-    }
-    catch (DivideByZero&)
-    {
-        std::cerr << "Error: cannot divide by 0" << '\n';
-    }
-    catch (InvalidOperator const &e)
-    {
-        std::cerr << "Error: invalid operand " << e.op << '\n';
+        try
+        {
+            double result = compute(op, l, r);
+            std::cout << l << op << r << '=' << result << '\n';
+        }
+        catch (DivideByZero &)
+        {
+            std::cerr << "Error: cannot divide by 0" << '\n';
+        }
+        catch (InvalidOperator const &e)
+        {
+            std::cerr << "Error: invalid operand " << e.op << '\n';
+        }
     }
 }
