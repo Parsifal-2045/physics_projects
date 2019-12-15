@@ -30,24 +30,27 @@ matrix reduce(matrix const &D)
     }
     if (D.a11() != 0)
     {
-        while (D.a21() != 0)
+        double a = 1;
+        double b = D.a12() / D.a11();
+        double c = D.a21();
+        double d = D.a22();
+        while (c != 0)
         {
-            double a = (D.a11() / D.a11());
-            double b = (D.a12() / D.a11());
-            double c = D.a21();
-            double d = D.a22();
             c = c - a;
             d = d - b;
-            matrix result = {a, b, c, d};
-            return result;
         }
+        matrix R = {a, b, c, d};
+        return R;
     }
 }
 
-
 TEST_CASE("Testing Gauss row reduction")
 {
-    matrix O = {0,0,0,0};
-    matrix m1 = {1,1,1,2};
-    CHECK(reduce(m1) == matrix {1,1,0,1});
+    matrix O = {0, 0, 0, 0};
+    matrix m1 = {1, 1, 1, 2};
+    matrix m2 = {3, 3, 3, 3};
+    matrix m3 = {2, 6, 4, 5};
+    CHECK(reduce(m1) == matrix{1, 1, 0, 1});
+    CHECK(reduce(m2) == matrix{1, 1, 0, 0});
+    CHECK(reduce(m3) == matrix{1, 3, 0, -7});
 }
