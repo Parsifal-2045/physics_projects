@@ -1,5 +1,6 @@
 #include <cmath>
 #include <iostream>
+#include <cctype>
 
 // definizione classe vector
 
@@ -109,6 +110,26 @@ public:
     vector v3() const { return c; }
 };
 
+struct optional_extract
+{
+    char c;
+    optional_extract(char c) : c{c} {}
+};
+
+std::istream &operator>>(std::istream &ins, optional_extract e)
+{
+    // Skip leading whitespace IFF user is not asking to extract a whitespace character
+    if (!std::isspace(e.c))
+        ins >> std::ws;
+
+    // Attempt to get the specific character
+    if (ins.peek() == e.c)
+        ins.get();
+
+    // There is no failure!
+    return ins;
+}
+
 Result GS(vector const &w1, vector const &w2, vector const &w3)
 {
     vector v1 = w1;
@@ -120,10 +141,20 @@ Result GS(vector const &w1, vector const &w2, vector const &w3)
 
 int main()
 {
-    vector v1 = {1, 2, 0};
-    vector v2 = {0, 5, 1};
-    vector v3 = {2, 3, 1};
-    Result r = GS(v1, v2, v3);
+    std::cout << "Inserire le coordinate del primo vettore: ";
+    double a, b, c;
+    std::cin >> a >> optional_extract(',') >> b >> optional_extract(',') >> c;
+    vector w1 = {a, b, c};
+    std::cout << "Inserire le coordinate del secondo vettore: ";
+    double d, e, f;
+    std::cin >> d >> optional_extract(',') >> e >> optional_extract(',') >> f;
+    vector w2 = {d, e, f};
+    std::cout << "Inserire le coordinate del terzo vettore: ";
+    double g, h, i;
+    std::cin >> g >> optional_extract(',') >> h >> optional_extract(',') >> i;
+    vector w3 = {g, h, i};
+    Result r = GS(w1, w2, w3);
+    std::cout << "La base ortogonale è formata dai seguenti vettori: " << '\n';
     std::cout << r.v1().x1() << ',' << r.v1().x2() << ',' << r.v1().x3() << '\n';
     std::cout << r.v2().x1() << ',' << r.v2().x2() << ',' << r.v2().x3() << '\n';
     std::cout << r.v3().x1() << ',' << r.v3().x2() << ',' << r.v3().x3() << '\n';
