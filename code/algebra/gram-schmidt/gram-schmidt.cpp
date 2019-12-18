@@ -122,7 +122,7 @@ int main()
 {
     vector v1 = {1, 2, 0};
     vector v2 = {0, 5, 1};
-    vector v3 = {0, 0, 0};
+    vector v3 = {2, 3, 1};
     Result r = GS(v1, v2, v3);
     std::cout << r.v1().x1() << ',' << r.v1().x2() << ',' << r.v1().x3() << '\n';
     std::cout << r.v2().x1() << ',' << r.v2().x2() << ',' << r.v2().x3() << '\n';
