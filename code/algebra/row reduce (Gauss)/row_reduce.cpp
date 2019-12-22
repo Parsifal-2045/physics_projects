@@ -123,8 +123,18 @@ matrix reduce(matrix const &A)
         }
         if (R2.x2() == 0 && R3.x2() == 0)
         {
-            matrix r = {R1, R2, R3};
-            return r;
+            if (R2.x3() != 0)
+            {
+                double c3 = R3.x3() / R2.x3();
+                R3 = R3 - (c3 * R2);
+                matrix Result = {R1, R2, R3};
+                return Result;
+            }
+            else
+            {
+                matrix r = {R1, R2, R3};
+                return r;
+            }
         }
     }
 }
