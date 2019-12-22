@@ -24,18 +24,12 @@ bool operator==(row const &L, row const &R)
     return L.x1() == R.x1() && L.x2() == R.x2() && L.x3() == R.x3();
 }
 
-row operator-(row const &U, row const &D)
+row operator-(row const &A, row const &B)
 {
-    double x1 = U.x1();
-    double x2 = U.x2();
-    double x3 = U.x3();
-    double y1 = D.x1();
-    double y2 = D.x2();
-    double y3 = D.x3();
-    double r1 = x1 - y1;
-    double r2 = x2 - y2;
-    double r3 = x3 - y3;
-    row result = {r1, r2, r3};
+    double a = A.x1() - B.x1();
+    double b = A.x2() - B.x2();
+    double c = A.x3() - B.x3();
+    row result = {a, b, c};
     return result;
 }
 
