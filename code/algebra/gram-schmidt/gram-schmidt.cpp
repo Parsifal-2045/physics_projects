@@ -155,7 +155,7 @@ int main()
     vector w3 = {g, h, i};
     Result r = GS(w1, w2, w3);
     std::cout << "La base ortogonale è formata dai seguenti vettori: " << '\n';
-    std::cout << r.v1().x1() << ',' << r.v1().x2() << ',' << r.v1().x3() << '\n';
-    std::cout << r.v2().x1() << ',' << r.v2().x2() << ',' << r.v2().x3() << '\n';
-    std::cout << r.v3().x1() << ',' << r.v3().x2() << ',' << r.v3().x3() << '\n';
+    std::cout << "v1 = " << r.v1().x1() << ',' << r.v1().x2() << ',' << r.v1().x3() << '\n';
+    std::cout << "v2 = " << r.v2().x1() << ',' << r.v2().x2() << ',' << r.v2().x3() << '\n';
+    std::cout << "v3 = " << r.v3().x1() << ',' << r.v3().x2() << ',' << r.v3().x3() << '\n';
 }
