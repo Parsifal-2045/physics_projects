@@ -1,6 +1,4 @@
 #include <stdexcept>
-#include <iostream>
-
 
 template <typename ND>
 class rational
