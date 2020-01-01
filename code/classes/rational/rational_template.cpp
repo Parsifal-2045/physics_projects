@@ -6,7 +6,7 @@ template <typename ND>
 class rational
 {
 private:
-    static_assert(std::is_integral<ND>);
+    static_assert(std::is_integral<ND>);  // assert per verificare che numeratore e denominatore siano interi
     ND n_num;
     ND n_den;
 
@@ -24,7 +24,7 @@ public:
             den = -den;
         }
 
-        auto const g = gcd(n_num, n_den);
+        auto const g = std::gcd(n_num, n_den);
         n_num /= g;
         n_den /= g;
     }
