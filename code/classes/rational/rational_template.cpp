@@ -90,7 +90,7 @@ rational<ND> operator/(rational<ND> const &l, rational<ND> const &r)
     return rational<ND>{l.num() * r.den(), l.den() * r.num()};
 }
 
-//Having inputs separated by /
+//Having inputs separated by '/'
 
 struct optional_extract
 {
