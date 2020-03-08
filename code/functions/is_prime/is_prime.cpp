@@ -24,7 +24,7 @@ bool is_prime(int const &n)
             i++;
         }
     }
-    if (n == 0)
+    if (n == 0 or n == 1)
     {
         return false;
     }
@@ -36,7 +36,7 @@ bool is_prime(int const &n)
 
 TEST_CASE("Testing is_prime")
 {
-    CHECK(is_prime(1) == true);
+    CHECK(is_prime(1) == false);
     CHECK(is_prime(10) == false);
     CHECK(is_prime(11) == true);
     CHECK(is_prime(0) == false);
