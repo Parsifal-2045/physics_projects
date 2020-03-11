@@ -1,4 +1,5 @@
 #include <iostream>
+#include <cassert>
 
 struct fit_s
 {
@@ -28,12 +29,13 @@ public:
 
     fit_s const fit()
     {
+        assert(m_N>1);
         double const num_A = (m_sum_y * m_sum_x2) - (m_sum_x * m_sum_xy);
         double const num_B = (m_N * m_sum_xy) - (m_sum_x * m_sum_y);
         double const den = (m_N * m_sum_x2) - (m_sum_x * m_sum_x);
         double A = num_A / den;
         double B = num_B / den;
-        fit_s result = {A,B};
+        fit_s result{A,B};
         return result;
     }
 };
