@@ -1,5 +1,5 @@
 #include <iostream>
-#include <cassert>
+#include <stdexcept>
 
 struct fit_s
 {
@@ -29,10 +29,17 @@ public:
 
     fit_s const fit()
     {
-        assert(m_N > 1);
+        if (m_N < 2)
+        {
+            throw std::runtime_error{"Not enough points"};
+        }
+        double const den = (m_N * m_sum_x2) - (m_sum_x * m_sum_x);
+        if (den == 0)
+        {
+            throw std::runtime_error{"Vertical line"};
+        }
         double const num_A = (m_sum_y * m_sum_x2) - (m_sum_x * m_sum_xy);
         double const num_B = (m_N * m_sum_xy) - (m_sum_x * m_sum_y);
-        double const den = (m_N * m_sum_x2) - (m_sum_x * m_sum_x);
         double A = num_A / den;
         double B = num_B / den;
         fit_s result{A, B};
@@ -62,22 +69,29 @@ std::istream &operator>>(std::istream &ins, optional_extract e)
 
 int main()
 {
-    Regression reg;
-    int N;
-    std::cout << "Dichiarare il numero di punti di cui si vuole eseguire il fit: ";
-    std::cin >> N;
-    int i = 1;
-    while (i <= N)
+    try
     {
-        double x;
-        double y;
-        std::cout << "Inserire le coordinate del punto " << i << " separate da una virgola: ";
-        std::cin >> x >> optional_extract(',') >> y;
-        reg.add(x, y);
-        ++i;
+        Regression reg;
+        int N;
+        std::cout << "Dichiarare il numero di punti di cui si vuole eseguire il fit: ";
+        std::cin >> N;
+        int i = 1;
+        while (i <= N)
+        {
+            double x;
+            double y;
+            std::cout << "Inserire le coordinate del punto " << i << " separate da una virgola: ";
+            std::cin >> x >> optional_extract(',') >> y;
+            reg.add(x, y);
+            ++i;
+        }
+        auto result = reg.fit();
+        std::cout << "Y = " << result.A << " + " << result.B << " X\n";
     }
-    auto result = reg.fit();
-    std::cout << "Y = " << result.A << " + " << result.B << " X\n";
+    catch (const std::exception &e)
+    {
+        std::cerr << e.what() << '\n';
+    }
 }
 
 /*int main()        //old main
