@@ -2,6 +2,7 @@
 #include <vector>
 #include <stdexcept>
 #include <numeric>
+#include <cmath>
 
 struct Point
 {
@@ -28,16 +29,17 @@ struct Result
 {
     double A;
     double B;
+    double r;
 };
 
-bool operator==(Result const &l, Result const &r)
+bool operator==(Result const &lhs, Result const &rhs)
 {
-    return l.A == r.A && l.B == r.B;
+    return lhs.A == rhs.A && lhs.B == rhs.B && lhs.r == rhs.r;
 }
 
-bool operator!=(Result const &l, Result const &r)
+bool operator!=(Result const &lhs, Result const &rhs)
 {
-    return !(l == r);
+    return !(lhs == rhs);
 }
 
 class Regression
@@ -55,7 +57,7 @@ public:
     {
         Point const p = {x, y};
         auto remover = m_points.begin();
-        for (auto const& end = m_points.end(); remover != end; ++remover)
+        for (auto const &end = m_points.end(); remover != end; ++remover)
         {
             Point const &current = *remover;
             if (current == p)
@@ -68,7 +70,7 @@ public:
             m_points.erase(remover);
             return true;
         }
-        else 
+        else
         {
             return false;
         }
@@ -98,11 +100,25 @@ public:
         {
             throw std::runtime_error{"Vertical line"};
         }
+        double const x_med = sum_x / N;
+        double const y_med = sum_y / N;
+        double num_r = 0;
+        double diff_x2 = 0;
+        double diff_y2 = 0;
+        for (auto it = m_points.begin(), end = m_points.end(); it != end; ++it)
+        {
+            auto const &v = *it;
+            num_r += ((v.x - x_med) * (v.y - y_med));
+            diff_x2 += ((v.x - x_med) * (v.x - x_med));
+            diff_y2 += ((v.y - y_med) * (v.y - y_med));
+        }
         double const num_A = (sum_y * sum_x2) - (sum_x * sum_xy);
         double const num_B = (N * sum_xy) - (sum_x * sum_y);
+        double const den_r = sqrt(diff_x2) * sqrt(diff_y2);
         double A = num_A / den;
         double B = num_B / den;
-        return Result{A, B};
+        double r = num_r / den_r;
+        return Result{A, B, r};
     }
 };
 
@@ -118,6 +134,7 @@ int main()
         auto result = reg.fit();
         // should print Y = 0 + 1 X
         std::cout << "Y = " << result.A << " + " << result.B << " X\n";
+        std::cout << "The linear correlation coefficient is: " << result.r << '\n';
     }
     catch (const std::exception &e)
     {
