@@ -122,7 +122,53 @@ public:
     }
 };
 
+struct optional_extract
+{
+    char c;
+    optional_extract(char c) : c{c} {}
+};
+
+std::istream &operator>>(std::istream &ins, optional_extract e)
+{
+    // Skip leading whitespace IFF user is not asking to extract a whitespace character
+    if (!std::isspace(e.c))
+        ins >> std::ws;
+
+    // Attempt to get the specific character
+    if (ins.peek() == e.c)
+        ins.get();
+
+    // There is no failure!
+    return ins;
+}
+
 int main()
+{
+    try
+    {
+        Regression reg;
+        int N;
+        std::cout << "Declare the number of points to fit: ";
+        std::cin >> N;
+        for (int i = 1; i != N + 1; i++)
+        {
+            double x;
+            double y;
+            std::cout << "Insert the coordinates of the point " << i << " separated by a comma: ";
+            std::cin >> x >> optional_extract(',') >> y;
+            reg.add(x, y);
+        }
+        auto result = reg.fit();
+        std::cout << "Y = " << result.A << " + " << result.B << " X\n";
+        std::cout << "The linear correlation coefficient is: " << result.r << '\n';
+    }
+    catch (const std::exception &e)
+    {
+        std::cerr << e.what() << '\n';
+    }
+}
+
+/*int main()                    //old main
 {
     try
     {
@@ -140,4 +186,4 @@ int main()
     {
         std::cerr << e.what() << '\n';
     }
-}
+}*/
