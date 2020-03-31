@@ -29,7 +29,7 @@ private:
 public:
     Orbit(State s0, double rp) : m_s0{s0}, m_rp{rp} {}
 
-    auto createOrbit(int const &N_point)
+    auto const createOrbit(int const &N_point)
     {
         std::vector<State> result;
         result.reserve(N_point);
@@ -58,10 +58,13 @@ double convert(double const &value, Unit unit)
     {
     case Unit::meter:
         return value;
+        break;
     case Unit::kilometer:
-        return value / 1000;
+        return value / 1000.;
+        break;
     case Unit::au:
         return value / cf_au;
+        break;
     };
 }
 
