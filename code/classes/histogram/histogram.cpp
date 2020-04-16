@@ -15,17 +15,19 @@ private:
     double m_underflow;
     double m_overflow;
 
-    int m_bin_number(double const &x)
+    int m_bin_number(double const &x) const
     {
-        return (m_nbin * (x - m_xlow) / (m_xup - m_xlow));
+        int const ibin = (m_nbin * (x - m_xlow) / (m_xup - m_xlow));
+        assert(ibin >= 0 && ibin < m_bin.size());
+        return ibin;
     }
 
-    int max() const
+    auto max() const
     {
         return *std::max_element(m_bin.begin(), m_bin.end());
     }
 
-    int min() const
+    auto min() const
     {
         return *std::min_element(m_bin.begin(), m_bin.end());
     }
@@ -42,18 +44,17 @@ public:
         {
             ++m_underflow;
         }
-        if (x > m_xup)
+        if (x >= m_xup)
         {
             ++m_overflow;
         }
         else
         {
-            int i_bin = m_bin_number(x);
-            ++m_bin[i_bin];
+            ++m_bin[m_bin_number(x)];
         }
     }
 
-    void draw()
+    void draw() const
     {
         int max_value = max();
         for (int current = max_value; current > 0; --current)
@@ -71,9 +72,11 @@ public:
             }
             std::cout << '\n';
         }
+        std::cout << "Underflow: " << m_underflow << '\n';
+        std::cout << "Overflow : " << m_overflow << '\n';
     }
 
-    /*    void draw()
+    /*    void drawh() const
     {
         for (auto it = m_bin.begin(), end = m_bin.end(); it != end; ++it)
         {
