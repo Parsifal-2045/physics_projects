@@ -12,12 +12,12 @@ struct Result
     double r;
 };
 
-bool operator==(Result const &lhs, Result const &rhs)
+inline bool operator==(Result const &lhs, Result const &rhs)
 {
     return lhs.A == rhs.A && lhs.B == rhs.B && lhs.r == rhs.r;
 }
 
-bool operator!=(Result const &lhs, Result const &rhs)
+inline bool operator!=(Result const &lhs, Result const &rhs)
 {
     return !(lhs == rhs);
 }

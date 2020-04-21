@@ -7,17 +7,17 @@ struct Point
     double y;
 };
 
-bool operator==(Point const &lhs, Point const &rhs)
+inline bool operator==(Point const &lhs, Point const &rhs)
 {
     return lhs.x == rhs.x && lhs.y == rhs.y;
 }
 
-bool operator!=(Point const &lhs, Point const &rhs)
+inline bool operator!=(Point const &lhs, Point const &rhs)
 {
     return !(lhs == rhs);
 }
 
-Point operator+(Point const &lhs, Point const &rhs)
+inline Point operator+(Point const &lhs, Point const &rhs)
 {
     return Point{lhs.x + rhs.x, lhs.y + rhs.y};
 }

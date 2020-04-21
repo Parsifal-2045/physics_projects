@@ -8,7 +8,7 @@ struct optional_extract
     optional_extract(char c) : c{c} {}
 };
 
-std::istream &operator>>(std::istream &ins, optional_extract e)
+inline std::istream &operator>>(std::istream &ins, optional_extract e)
 {
     // Skip leading whitespace IFF user is not asking to extract a whitespace character
     if (!std::isspace(e.c))
