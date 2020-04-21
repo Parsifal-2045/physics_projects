@@ -22,7 +22,7 @@ int main()
             double y;
             std::cout << "Insert the coordinates of the point " << i << " separated by a comma: ";
             std::cin >> x >> optional_extract(',') >> y;
-            reg.add(x, y);
+            reg.add({x, y});
         }
         auto result = reg.fit();
         std::cout << "Y = " << result.A << " + " << result.B << " X\n";

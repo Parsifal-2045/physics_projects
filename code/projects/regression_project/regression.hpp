@@ -28,19 +28,18 @@ private:
     std::vector<Point> m_points;
 
 public:
-    void add(double x, double y)
+    void add(Point const &P)
     {
-        m_points.push_back({x, y});
+        m_points.push_back(P);
     }
 
-    auto remove(double x, double y)
+    auto remove(Point const &P)
     {
-        Point const p = {x, y};
         auto remover = m_points.begin();
-        for (auto const &end = m_points.end(); remover != end; ++remover)
+        for (auto end = m_points.end(); remover != end; ++remover)
         {
             Point const &current = *remover;
-            if (current == p)
+            if (current == P)
             {
                 break;
             }
