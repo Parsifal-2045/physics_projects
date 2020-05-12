@@ -47,33 +47,98 @@ public:
     auto CheckNeighbours(int x, int y) const // Checks if there are infected cells nearby
     {
         int infect = 0;
-        for (int i = -1; i != 2; i++)
+        if (y == 0)
         {
-            if (GetCellState(x - 1, y + i) == State::Infect)
+            //upper left border cells
+
+            for (int i = 0; i != 2; i++)
+            {
+                if (GetCellState(x - 1, y + i) == State::Infect)
+                {
+                    ++infect;
+                }
+            }
+
+            //middle left border cells
+
+            if (GetCellState(x, y + 1) == State::Infect)
             {
                 ++infect;
             }
+
+            //lower left border cells
+
+            for (int i = 0; i != 2; i++)
+            {
+                if (GetCellState(x + 1, y + i) == State::Infect)
+                {
+                    ++infect;
+                }
+            }
         }
 
-        // middle cells
-
-        if (GetCellState(x, y - 1) == State::Infect)
+        if (y == size_ - 1)
         {
-            ++infect;
-        }
+            //upper right border cells
 
-        if (GetCellState(x, y + 1) == State::Infect)
-        {
-            ++infect;
-        }
+            for (int i = -1; i != 1; i++)
+            {
+                if (GetCellState(x + 1, y + i) == State::Infect)
+                {
+                    ++infect;
+                }
+            }
 
-        // lower cells
+            //middle right border cells
 
-        for (int i = -1; i != 2; i++)
-        {
-            if (GetCellState(x + 1, y + i) == State::Infect)
+            if (GetCellState(x, y - 1) == State::Infect)
             {
                 ++infect;
+            }
+
+            //lower right border cells
+
+            for (int i = 0; i != 1; i++)
+            {
+                if (GetCellState(x + 1, y + i) == State::Infect)
+                {
+                    ++infect;
+                }
+            }
+        }
+
+        else
+        {
+            // upper cells
+
+            for (int i = -1; i != 2; i++)
+            {
+                if (GetCellState(x - 1, y + i) == State::Infect)
+                {
+                    ++infect;
+                }
+            }
+
+            // middle cells
+
+            if (GetCellState(x, y - 1) == State::Infect)
+            {
+                ++infect;
+            }
+
+            if (GetCellState(x, y + 1) == State::Infect)
+            {
+                ++infect;
+            }
+
+            // lower cells
+
+            for (int i = -1; i != 2; i++)
+            {
+                if (GetCellState(x + 1, y + i) == State::Infect)
+                {
+                    ++infect;
+                }
             }
         }
         return infect;
@@ -82,6 +147,12 @@ public:
     void print()
     {
         std::cout << "\033c";
+        const std::string red("\033[0;31m");
+        const std::string green("\033[1;32m");
+        const std::string yellow("\033[1;33m");
+        const std::string cyan("\033[0;36m");
+        const std::string magenta("\033[0;35m");
+        const std::string reset("\033[0m");
         for (int i = 0; i != size_; i++)
         {
             for (int j = 0; j != size_; j++)
@@ -94,11 +165,11 @@ public:
                 }
                 if (status == 1)
                 {
-                    std::cout << "i ";
+                    std::cout << red << "i " << reset;
                 }
                 if (status == 2)
                 {
-                    std::cout << "x ";
+                    std::cout << green << "x " << reset;
                 }
             }
             std::cout << '\n';

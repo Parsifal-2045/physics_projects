@@ -64,11 +64,13 @@ auto evolve(Board const &current)
 
 int main()
 {
-    int const N = 50;
+    int const N = 25;
     Board test(N);
-    test(0, 0) = State::Infect;
-    test(6, 7) = State::Infect;
-    test(5, 5) = State::Infect;
+    test(0, 24) = State::Infect;
+    test(14, 24) = State::Infect;
+    test(13, 24) = State::Infect;
+    test(17, 24) = State::Infect;
+    test(24, 24) = State::Infect;
     for (int i = 0; i != 100; ++i)
     {
         test.print();
