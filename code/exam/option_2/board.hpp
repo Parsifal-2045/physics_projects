@@ -4,7 +4,6 @@
 #include <vector>
 #include <cassert>
 #include <iostream>
-#include <SFML/Graphics.hpp>
 
 enum class State : char
 {
