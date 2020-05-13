@@ -20,7 +20,7 @@ State &Board::operator()(int x, int y)
 
 State Board::GetCellState(int x, int y) const
 {
-    if (x > size_ || y > size_ || x < 0 || y < 0)
+    if (x >= size_ || y >= size_ || x < 0 || y < 0)
     {
         return State::Recovered;
     }
