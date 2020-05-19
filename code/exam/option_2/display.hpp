@@ -10,7 +10,7 @@ class Display
 private:
     int board_side_;
     sf::RenderWindow window_;
-    static constexpr int cell_size_ = 10;
+    static constexpr int cell_size_ = 7;
     static int display_side(int board_side)
     {
         return (board_side - 6) * cell_size_;
@@ -28,8 +28,6 @@ public:
     {
         assert(board_side_ == board.size());
         window_.clear(sf::Color::White);
-
-        //sf::RectangleShape susceptible(sf::Vector2f(cell_size_, cell_size_));
 
         sf::RectangleShape infected(sf::Vector2f(cell_size_, cell_size_));
         infected.setFillColor(sf::Color::Red);
@@ -68,18 +66,6 @@ public:
         while (event.type != sf::Event::KeyPressed)
         {
             window_.waitEvent(event);
-        }
-    }
-    void CloseWindow()
-    {
-        sf::Event event;
-        while (window_.isOpen())
-        {
-            if (event.type == sf::Event::Closed)
-            {
-                window_.close();
-                break;
-            }
         }
     }
 };

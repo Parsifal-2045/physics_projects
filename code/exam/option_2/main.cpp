@@ -7,7 +7,7 @@
 
 int main()
 {
-    int const N = 75;
+    int const N = 150;
     Board test(N);
     Display display{N};
     display.draw(test);
