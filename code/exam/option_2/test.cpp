@@ -115,15 +115,12 @@ TEST_CASE("Testing spread and heal on board")
             CHECK(test.GetCellState(i, j) == State::Susceptible);
         }
     }
-    CHECK(GetSusceptible(test) == N * N);
     CHECK(test.GetCellState(N + 1, N + 1) == State::Recovered);
     CHECK(test.GetCellState(-1, -1) == State::Recovered);
 
     SUBCASE("Testing infection rate in the board")
     {
         test(2, 3) = State::Infect;
-        CHECK(GetInfected(test) == 1);
-        CHECK(GetSusceptible(test) == (N * N) - 1);
 
         Board evolved_1 = EvolveTestContagion(test);
         CHECK(evolved_1.GetCellState(1, 2) == State::Infect);
@@ -135,8 +132,6 @@ TEST_CASE("Testing spread and heal on board")
         CHECK(evolved_1.GetCellState(3, 2) == State::Infect);
         CHECK(evolved_1.GetCellState(3, 3) == State::Infect);
         CHECK(evolved_1.GetCellState(3, 4) == State::Infect);
-        CHECK(GetInfected(evolved_1) == 9);
-        CHECK(GetSusceptible(evolved_1) + GetInfected(evolved_1) + GetRecovered(evolved_1) == N * N);
 
         Board evolved_2 = EvolveTestContagion(evolved_1);
         for (int i = 0; i != 5; i++)
@@ -147,6 +142,39 @@ TEST_CASE("Testing spread and heal on board")
             }
         }
     }
+
+    SUBCASE("Testing GetSIR")
+    {
+        auto initial_state = test.GetSIR();
+        CHECK(initial_state.S == N * N);
+        CHECK(initial_state.I == 0);
+        CHECK(initial_state.R == 0);
+
+        test(2, 2) = State::Infect;
+        CHECK(test.GetSIR().S == (N * N) - 1);
+        CHECK(test.GetSIR().I == 1);
+        CHECK(test.GetSIR().R == 0);
+        CHECK(test.GetSIR().S + test.GetSIR().I + test.GetSIR().R == N * N);
+
+        Board evolved = EvolveTestContagion(test);
+        CHECK(evolved.GetSIR().S == (N * N) - 9);
+        CHECK(evolved.GetSIR().I == 9);
+        CHECK(evolved.GetSIR().R == 0);
+        CHECK(evolved.GetSIR().S + evolved.GetSIR().I + evolved.GetSIR().R == N * N);
+
+        Board evolved2 = EvolveTestContagion(evolved);
+        CHECK(evolved2.GetSIR().S == (N * N) - 25);
+        CHECK(evolved2.GetSIR().I == 25);
+        CHECK(evolved2.GetSIR().R == 0);
+        CHECK(evolved2.GetSIR().S + evolved2.GetSIR().I + evolved2.GetSIR().R == N * N);
+
+        Board healed = EvolveTestHeal(evolved2);
+        CHECK(healed.GetSIR().S == (N * N) - 25);
+        CHECK(healed.GetSIR().I == 0);
+        CHECK(healed.GetSIR().R == 25);
+        CHECK(healed.GetSIR().S + healed.GetSIR().I + healed.GetSIR().R == N * N);
+    }
+
     SUBCASE("Testing contagion near the edges")
     {
         test(0, 0) = State::Infect;
