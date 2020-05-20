@@ -180,6 +180,7 @@ public:
                 }
             }
         }
+        assert(sus + inf + rec == static_cast<int>(data_.size()));
         return SIR{sus, inf, rec};
     }
 
@@ -213,9 +214,9 @@ public:
             }
             std::cout << '\n';
         }
-        std::cout << "Susceptibles : " << GetSIR().S << '\n';
-        std::cout << "Infected : " << GetSIR().I << '\n';
-        std::cout << "Recovered : " << GetSIR().R << '\n';
+        std::cout << "Susceptibles : " << GetSIR().S << " | "
+                  << "Infected : " << GetSIR().I << " | "
+                  << "Recovered : " << GetSIR().R << '\n';
     }
 };
 
@@ -277,6 +278,5 @@ inline Board evolve(Board const &current)
     }
     return next;
 }
-
 
 #endif
