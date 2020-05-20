@@ -13,6 +13,13 @@ enum class State : char
     Recovered
 };
 
+struct SIR
+{
+    int S = 0;
+    int I = 0;
+    int R = 0;
+};
+
 class Board
 {
 private:
@@ -150,6 +157,32 @@ public:
         return infect;
     }
 
+    SIR GetSIR()
+    {
+        int sus = 0;
+        int inf = 0;
+        int rec = 0;
+        for (int i = 0; i != size_; i++)
+        {
+            for (int j = 0; j != size_; j++)
+            {
+                if (GetCellState(i, j) == State::Susceptible)
+                {
+                    ++sus;
+                }
+                if (GetCellState(i, j) == State::Infect)
+                {
+                    ++inf;
+                }
+                if (GetCellState(i, j) == State::Recovered)
+                {
+                    ++rec;
+                }
+            }
+        }
+        return SIR{sus, inf, rec};
+    }
+
     void print()
     {
         std::cout << "\033c";
@@ -180,6 +213,9 @@ public:
             }
             std::cout << '\n';
         }
+        std::cout << "Susceptibles : " << GetSIR().S << '\n';
+        std::cout << "Infected : " << GetSIR().I << '\n';
+        std::cout << "Recovered : " << GetSIR().R << '\n';
     }
 };
 
@@ -242,52 +278,5 @@ inline Board evolve(Board const &current)
     return next;
 }
 
-inline auto GetSusceptible(Board const &current)
-{
-    int susceptible = 0;
-    for (int i = 0; i != current.size(); i++)
-    {
-        for (int j = 0; j != current.size(); j++)
-        {
-            if (current.GetCellState(i, j) == State::Susceptible)
-            {
-                ++susceptible;
-            }
-        }
-    }
-    return susceptible;
-}
-
-inline auto GetInfected(Board const &current)
-{
-    int infected = 0;
-    for (int i = 0; i != current.size(); i++)
-    {
-        for (int j = 0; j != current.size(); j++)
-        {
-            if (current.GetCellState(i, j) == State::Infect)
-            {
-                ++infected;
-            }
-        }
-    }
-    return infected;
-}
-
-inline auto GetRecovered(Board const &current)
-{
-    int recovered = 0;
-    for (int i = 0; i!= current.size(); i++)
-    {
-        for(int j = 0; j!= current.size(); j++)
-        {
-            if (current.GetCellState(i, j) == State::Recovered)
-            {
-                ++ recovered;
-            }
-        }
-    }
-    return recovered;
-}
 
 #endif
