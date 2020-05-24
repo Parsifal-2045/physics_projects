@@ -10,7 +10,7 @@ class Display
 private:
     int board_side_;
     sf::RenderWindow window_;
-    static constexpr int cell_size_ = 7;
+    static constexpr int cell_size_ = 5;
     static int display_side(int board_side)
     {
         return (board_side - 6) * cell_size_;
@@ -41,32 +41,47 @@ public:
 
         int const N = board.size();
 
-        for (int i = 3; i != N - 3; ++i)
+        for (int i = 0; i != N; ++i)
         {
-            for (int j = 3; j != N - 3; ++j)
+            for (int j = 0; j != N; ++j)
             {
                 if (board.GetCellState(i, j) == State::Infect)
                 {
-                    infected.setPosition((j - 3) * cell_size_, (i - 3) * cell_size_);
+                    infected.setPosition(j * cell_size_, i * cell_size_);
                     window_.draw(infected);
                 }
                 if (board.GetCellState(i, j) == State::Recovered)
                 {
-                    recovered.setPosition((j - 3) * cell_size_, (i - 3) * cell_size_);
+                    recovered.setPosition(j * cell_size_, i * cell_size_);
                     window_.draw(recovered);
                 }
             }
         }
         window_.display();
     }
-    void WaitKeyPressed()
+    bool WaitKeyPressed()
     {
         sf::Event event;
-        window_.waitEvent(event);
-        while (event.type != sf::Event::KeyPressed)
+        bool action;
+        while (window_.waitEvent(event))
         {
-            window_.waitEvent(event);
+            if (event.type == sf::Event::Closed)
+            {
+                window_.close();
+                action = false;
+                break;
+            }
+            if (event.type == sf::Event::KeyPressed)
+            {
+                action = true;
+                break;
+            }
+            if ((event.type != sf::Event::Closed) && (event.type != sf::Event::KeyPressed))
+            {
+                continue;
+            }
         }
+        return action;
     }
 };
 

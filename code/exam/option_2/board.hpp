@@ -201,7 +201,7 @@ public:
                 assert(status >= 0 && status <= 2);
                 if (status == 0)
                 {
-                    std::cout << "o ";
+                    std::cout << cyan << "o " << reset;
                 }
                 if (status == 1)
                 {
