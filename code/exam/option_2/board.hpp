@@ -10,14 +10,16 @@ enum class State : char
 {
     Susceptible,
     Infect,
-    Recovered
+    Recovered,
+    Dead
 };
 
-struct SIR
+struct SIRD
 {
     int S = 0;
     int I = 0;
     int R = 0;
+    int D = 0;
 };
 
 class Board
@@ -39,34 +41,38 @@ public:
         return data_;
     }
 
-    State &operator()(int x, int y)
+    State &operator()(int i, int j)
     {
-        assert(x >= 0 && x < size_ && y >= 0 && y < size_);
-        return data_[x * size_ + y];
+        assert(i >= 0 && i < size_ && j >= 0 && j < size_);
+        return data_[i * size_ + j];
     }
 
-    State GetCellState(int x, int y) const
+    State GetCellState(int i, int j) const
     {
-        if (x >= size_ || y >= size_ || x < 0 || y < 0)
+        if (i >= size_ || j >= size_ || i < 0 || j < 0)
         {
             return State::Recovered;
         }
         else
         {
-            return data_[x * size_ + y];
+            return data_[i * size_ + j];
         }
     }
 
-    auto CheckNeighbours(int x, int y) const // Checks if there are infected cells nearby
+    auto CheckNeighbours(int i, int j) const // Checks if there are infected cells nearby
     {
         int infect = 0;
-        if (y == 0)
+        if (j == 0)
         {
-            //upper left border cells
+            //upper and lower left border cells
 
-            for (int i = 0; i != 2; i++)
+            for (int a = 0; a != 2; a++)
             {
-                if (GetCellState(x - 1, y + i) == State::Infect)
+                if (GetCellState(i - 1, j + a) == State::Infect)
+                {
+                    ++infect;
+                }
+                if (GetCellState(i + 1, j + a) == State::Infect)
                 {
                     ++infect;
                 }
@@ -74,29 +80,22 @@ public:
 
             //middle left border cells
 
-            if (GetCellState(x, y + 1) == State::Infect)
+            if (GetCellState(i, j + 1) == State::Infect)
             {
                 ++infect;
             }
+        }
+        if (j == size_ - 1)
+        {
+            //upper and lower right border cells
 
-            //lower left border cells
-
-            for (int i = 0; i != 2; i++)
+            for (int a = -1; a != 1; a++)
             {
-                if (GetCellState(x + 1, y + i) == State::Infect)
+                if (GetCellState(i + 1, j + a) == State::Infect)
                 {
                     ++infect;
                 }
-            }
-        }
-
-        if (y == size_ - 1)
-        {
-            //upper right border cells
-
-            for (int i = -1; i != 1; i++)
-            {
-                if (GetCellState(x + 1, y + i) == State::Infect)
+                if (GetCellState(i + 1, j + a) == State::Infect)
                 {
                     ++infect;
                 }
@@ -104,29 +103,22 @@ public:
 
             //middle right border cells
 
-            if (GetCellState(x, y - 1) == State::Infect)
+            if (GetCellState(i, j - 1) == State::Infect)
             {
                 ++infect;
             }
+        }
+        else
+        {
+            // upper cells and lower cells
 
-            //lower right border cells
-
-            for (int i = 0; i != 1; i++)
+            for (int a = -1; a != 2; a++)
             {
-                if (GetCellState(x + 1, y + i) == State::Infect)
+                if (GetCellState(i - 1, j + a) == State::Infect)
                 {
                     ++infect;
                 }
-            }
-        }
-
-        else
-        {
-            // upper cells
-
-            for (int i = -1; i != 2; i++)
-            {
-                if (GetCellState(x - 1, y + i) == State::Infect)
+                if (GetCellState(i + 1, j + a) == State::Infect)
                 {
                     ++infect;
                 }
@@ -134,34 +126,25 @@ public:
 
             // middle cells
 
-            if (GetCellState(x, y - 1) == State::Infect)
+            if (GetCellState(i, j - 1) == State::Infect)
             {
                 ++infect;
             }
 
-            if (GetCellState(x, y + 1) == State::Infect)
+            if (GetCellState(i, j + 1) == State::Infect)
             {
                 ++infect;
-            }
-
-            // lower cells
-
-            for (int i = -1; i != 2; i++)
-            {
-                if (GetCellState(x + 1, y + i) == State::Infect)
-                {
-                    ++infect;
-                }
             }
         }
         return infect;
     }
 
-    SIR GetSIR()
+    SIRD GetSIRD()
     {
         int sus = 0;
         int inf = 0;
         int rec = 0;
+        int dead = 0;
         for (int i = 0; i != size_; i++)
         {
             for (int j = 0; j != size_; j++)
@@ -178,10 +161,14 @@ public:
                 {
                     ++rec;
                 }
+                if (GetCellState(i, j) == State::Dead)
+                {
+                    ++dead;
+                }
             }
         }
-        assert(sus + inf + rec == static_cast<int>(data_.size()));
-        return SIR{sus, inf, rec};
+        assert(sus + inf + rec + dead == static_cast<int>(data_.size()));
+        return SIRD{sus, inf, rec, dead};
     }
 
     void print()
@@ -198,25 +185,30 @@ public:
             for (int j = 0; j != size_; j++)
             {
                 auto status = static_cast<int>(data_[i * size_ + j]);
-                assert(status >= 0 && status <= 2);
+                assert(status >= 0 && status <= 3);
                 if (status == 0)
                 {
-                    std::cout << cyan << "o " << reset;
+                    std::cout << "o ";
                 }
                 if (status == 1)
                 {
-                    std::cout << red << "i " << reset;
+                    std::cout << magenta << "i " << reset;
                 }
                 if (status == 2)
                 {
-                    std::cout << green << "x " << reset;
+                    std::cout << green << "o " << reset;
+                }
+                if (status == 3)
+                {
+                    std::cout << red << "x " << reset;
                 }
             }
             std::cout << '\n';
         }
-        std::cout << "Susceptibles : " << GetSIR().S << " | "
-                  << "Infected : " << GetSIR().I << " | "
-                  << "Recovered : " << GetSIR().R << '\n';
+        std::cout << "Susceptibles : " << GetSIRD().S << " | "
+                  << "Infected : " << GetSIRD().I << " | "
+                  << "Recovered : " << GetSIRD().R << " | "
+                  << "Dead : " << GetSIRD().D << '\n';
     }
 };
 
@@ -226,6 +218,7 @@ inline Board evolve(Board const &current)
     std::uniform_real_distribution<> dis(0., 1.);
     auto contagion_probability = dis(gen);
     auto heal_probability = dis(gen);
+    auto death_probability = dis(gen);
     int const N = current.size();
     Board next(N);
     for (int i = 0; i != N; ++i)
@@ -242,15 +235,20 @@ inline Board evolve(Board const &current)
             }
             if (current.GetCellState(i, j) == State::Infect)
             {
-                if (heal_probability > status)
+                if (heal_probability >= status)
                 {
                     next(i, j) = State::Recovered;
                 }
-                else
+                else if (death_probability >= status)
+                {
+                    next(i, j) = State::Dead;
+                }
+                else 
                 {
                     next(i, j) = current.GetCellState(i, j);
                     assert(next.GetCellState(i, j) == State::Infect);
                 }
+
             }
             if (current.GetCellState(i, j) == State::Susceptible)
             {
@@ -273,6 +271,11 @@ inline Board evolve(Board const &current)
                         assert(next.GetCellState(i, j) == State::Susceptible);
                     }
                 }
+            }
+            if (current.GetCellState(i, j) == State::Dead)
+            {
+                next(i, j) = current.GetCellState(i, j);
+                assert(next.GetCellState(i, j) == State::Dead);
             }
         }
     }
