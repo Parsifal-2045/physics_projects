@@ -1,4 +1,5 @@
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
+#define NDEBUG
 #include "doctest.h"
 #include "board.hpp"
 
@@ -188,7 +189,7 @@ TEST_CASE("Testing spread and heal on board")
 
     SUBCASE("Testing CheckNeighbours")
     {
-        for(int i = 0; i != N; i++)
+        for (int i = 0; i != N; i++)
         {
             for (int j = 0; j != N; j++)
             {
@@ -216,6 +217,27 @@ TEST_CASE("Testing spread and heal on board")
         CHECK(test.CheckNeighbours(1, 7) == 8);
         test(8, 4) = State::Infect;
         CHECK(test.CheckNeighbours(8, 4) == 0);
+        for (int i = 0; i != N; i++)
+        {
+            for (int j = 0; j != N; j++)
+            {
+                test(i, j) = State::Infect;
+            }
+        }
+        for (int i = 1; i != N - 1; i++)
+        {
+            CHECK(test.CheckNeighbours(i, 9) == 5);
+            CHECK(test.CheckNeighbours(i, 0) == 5);
+        }
+        CHECK(test.CheckNeighbours(0, 9) == 3);
+        CHECK(test.CheckNeighbours(9, 9) == 3);
+        CHECK(test.CheckNeighbours(0, 0) == 3);
+        CHECK(test.CheckNeighbours(9, 0) == 3);
+        for (int j = 1; j != N - 1; j++)
+        {
+            CHECK(test.CheckNeighbours(0, j) == 5);
+            CHECK(test.CheckNeighbours(9, j) == 5);
+        }
     }
 
     SUBCASE("Testing infection rate in the board")
