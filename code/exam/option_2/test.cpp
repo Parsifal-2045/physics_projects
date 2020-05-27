@@ -48,6 +48,10 @@ Board EvolveTestContagion(Board const &current)
                     }
                 }
             }
+            if (current.GetCellState(i, j) == State::Dead)
+            {
+                next(i, j) = current.GetCellState(i, j);
+            }
         }
     }
     return next;
@@ -99,6 +103,70 @@ Board EvolveTestHeal(Board const &current)
                     }
                 }
             }
+            if (current.GetCellState(i, j) == State::Dead)
+            {
+                next(i, j) = current.GetCellState(i, j);
+            }
+        }
+    }
+    return next;
+}
+
+Board EvolveTestDeath(Board const &current)
+{
+    auto contagion_probability = 0;
+    auto heal_probability = 0;
+    auto death_probability = 1;
+    int const N = current.size();
+    Board next(N);
+    for (int i = 0; i != N; ++i)
+    {
+        for (int j = 0; j != N; ++j)
+        {
+            auto status = 0.5;
+            if (current.GetCellState(i, j) == State::Recovered)
+            {
+                next(i, j) = current.GetCellState(i, j);
+            }
+            if (current.GetCellState(i, j) == State::Infect)
+            {
+                if (heal_probability >= status)
+                {
+                    next(i, j) = State::Recovered;
+                }
+                else if (death_probability >= status)
+                {
+                    next(i, j) = State::Dead;
+                }
+                else
+                {
+                    next(i, j) = current.GetCellState(i, j);
+                }
+            }
+            if (current.GetCellState(i, j) == State::Susceptible)
+            {
+                if (current.CheckNeighbours(i, j) == 0)
+                {
+                    next(i, j) = current.GetCellState(i, j);
+                }
+                else
+                {
+                    int infected = current.CheckNeighbours(i, j);
+                    auto contagion = infected * contagion_probability;
+                    if (contagion > status)
+                    {
+                        next(i, j) = State::Infect;
+                    }
+                    else
+                    {
+                        next(i, j) = current.GetCellState(i, j);
+                    }
+                }
+            }
+            if (current.GetCellState(i, j) == State::Dead)
+            {
+                next(i, j) = current.GetCellState(i, j);
+            }
         }
     }
     return next;
@@ -143,36 +211,41 @@ TEST_CASE("Testing spread and heal on board")
         }
     }
 
-    SUBCASE("Testing GetSIR")
+    SUBCASE("Testing GetSIRD")
     {
-        auto initial_state = test.GetSIR();
+        auto initial_state = test.GetSIRD();
         CHECK(initial_state.S == N * N);
         CHECK(initial_state.I == 0);
         CHECK(initial_state.R == 0);
+        CHECK(initial_state.D == 0);
 
         test(2, 2) = State::Infect;
-        CHECK(test.GetSIR().S == (N * N) - 1);
-        CHECK(test.GetSIR().I == 1);
-        CHECK(test.GetSIR().R == 0);
-        CHECK(test.GetSIR().S + test.GetSIR().I + test.GetSIR().R == N * N);
+        CHECK(test.GetSIRD().S == (N * N) - 1);
+        CHECK(test.GetSIRD().I == 1);
+        CHECK(test.GetSIRD().R == 0);
+        CHECK(test.GetSIRD().D == 0);
+        CHECK(test.GetSIRD().S + test.GetSIRD().I + test.GetSIRD().R + test.GetSIRD().D == N * N);
 
         Board evolved = EvolveTestContagion(test);
-        CHECK(evolved.GetSIR().S == (N * N) - 9);
-        CHECK(evolved.GetSIR().I == 9);
-        CHECK(evolved.GetSIR().R == 0);
-        CHECK(evolved.GetSIR().S + evolved.GetSIR().I + evolved.GetSIR().R == N * N);
+        CHECK(evolved.GetSIRD().S == (N * N) - 9);
+        CHECK(evolved.GetSIRD().I == 9);
+        CHECK(evolved.GetSIRD().R == 0);
+        CHECK(evolved.GetSIRD().D == 0);
+        CHECK(evolved.GetSIRD().S + evolved.GetSIRD().I + evolved.GetSIRD().R + evolved.GetSIRD().D == N * N);
 
         Board evolved2 = EvolveTestContagion(evolved);
-        CHECK(evolved2.GetSIR().S == (N * N) - 25);
-        CHECK(evolved2.GetSIR().I == 25);
-        CHECK(evolved2.GetSIR().R == 0);
-        CHECK(evolved2.GetSIR().S + evolved2.GetSIR().I + evolved2.GetSIR().R == N * N);
+        CHECK(evolved2.GetSIRD().S == (N * N) - 25);
+        CHECK(evolved2.GetSIRD().I == 25);
+        CHECK(evolved2.GetSIRD().R == 0);
+        CHECK(evolved2.GetSIRD().D == 0);
+        CHECK(evolved2.GetSIRD().S + evolved2.GetSIRD().I + evolved2.GetSIRD().R + evolved2.GetSIRD().D == N * N);
 
         Board healed = EvolveTestHeal(evolved2);
-        CHECK(healed.GetSIR().S == (N * N) - 25);
-        CHECK(healed.GetSIR().I == 0);
-        CHECK(healed.GetSIR().R == 25);
-        CHECK(healed.GetSIR().S + healed.GetSIR().I + healed.GetSIR().R == N * N);
+        CHECK(healed.GetSIRD().S == (N * N) - 25);
+        CHECK(healed.GetSIRD().I == 0);
+        CHECK(healed.GetSIRD().R == 25);
+        CHECK(healed.GetSIRD().D == 0);
+        CHECK(healed.GetSIRD().S + healed.GetSIRD().I + healed.GetSIRD().R + healed.GetSIRD().D == N * N);
     }
 
     SUBCASE("Testing contagion near the edges")
@@ -225,5 +298,21 @@ TEST_CASE("Testing spread and heal on board")
         CHECK(evolved_1.GetCellState(2, 2) == State::Recovered);
         CHECK(evolved_1.GetCellState(4, 4) == State::Recovered);
         CHECK(evolved_1.GetCellState(7, 8) == State::Recovered);
+    }
+    SUBCASE("Testing Death")
+    {
+        test(1, 1) = State::Dead;
+
+        CHECK(test.GetCellState(1, 1) == State::Dead);
+        for (int i = 0; i != 100; i++)
+        {
+            Board b = EvolveTestContagion(test);
+            CHECK(b.GetCellState(1, 1) == State::Dead);
+            CHECK(b.GetSIRD().S == N * N - 1);
+            CHECK(b.GetSIRD().I == 0);
+            CHECK(b.GetSIRD().R == 0);
+            CHECK(b.GetSIRD().D == 1);
+            CHECK(b.GetSIRD().S + b.GetSIRD().I + b.GetSIRD().R + b.GetSIRD().D == N * N);
+        }
     }
 }
