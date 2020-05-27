@@ -59,83 +59,53 @@ public:
         }
     }
 
-    auto CheckNeighbours(int i, int j) const // Checks if there are infected cells nearby
+    auto CheckNeighbours(int i, int j) const
     {
         int infect = 0;
+        if (GetCellState(i, j) == State::Infect)
+        {
+            --infect;
+        }
         if (j == 0)
         {
-            //upper and lower left border cells
-
-            for (int a = 0; a != 2; a++)
+            for (int row = -1; row != 2; row++)
             {
-                if (GetCellState(i - 1, j + a) == State::Infect)
+                for (int column = 0; column != 2; column++)
                 {
-                    ++infect;
+                    if (GetCellState(i + row, j + column) == State::Infect)
+                    {
+                        ++infect;
+                    }
                 }
-                if (GetCellState(i + 1, j + a) == State::Infect)
-                {
-                    ++infect;
-                }
-            }
-
-            //middle left border cells
-
-            if (GetCellState(i, j + 1) == State::Infect)
-            {
-                ++infect;
             }
         }
         if (j == size_ - 1)
         {
-            //upper and lower right border cells
-
-            for (int a = -1; a != 1; a++)
+            for (int row = -1; row != 2; row++)
             {
-                if (GetCellState(i + 1, j + a) == State::Infect)
+                for (int column = -1; column != 1; column++)
                 {
-                    ++infect;
+                    if (GetCellState(i + row, j + column) == State::Infect)
+                    {
+                        ++infect;
+                    }
                 }
-                if (GetCellState(i + 1, j + a) == State::Infect)
-                {
-                    ++infect;
-                }
-            }
-
-            //middle right border cells
-
-            if (GetCellState(i, j - 1) == State::Infect)
-            {
-                ++infect;
             }
         }
         else
         {
-            // upper cells and lower cells
-
-            for (int a = -1; a != 2; a++)
+            for (int row = -1; row != 2; row++)
             {
-                if (GetCellState(i - 1, j + a) == State::Infect)
+                for (int column = -1; column != 2; column++)
                 {
-                    ++infect;
+                    if (GetCellState(i + row, j + column) == State::Infect)
+                    {
+                        ++infect;
+                    }
                 }
-                if (GetCellState(i + 1, j + a) == State::Infect)
-                {
-                    ++infect;
-                }
-            }
-
-            // middle cells
-
-            if (GetCellState(i, j - 1) == State::Infect)
-            {
-                ++infect;
-            }
-
-            if (GetCellState(i, j + 1) == State::Infect)
-            {
-                ++infect;
             }
         }
+        assert(infect >= 0 && infect <= 8);
         return infect;
     }
 
@@ -248,12 +218,11 @@ inline Board evolve(Board const &current)
                 {
                     next(i, j) = State::Dead;
                 }
-                else 
+                else
                 {
                     next(i, j) = current.GetCellState(i, j);
                     assert(next.GetCellState(i, j) == State::Infect);
                 }
-
             }
             if (current.GetCellState(i, j) == State::Susceptible)
             {

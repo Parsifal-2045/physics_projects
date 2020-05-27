@@ -1,5 +1,3 @@
-#include <thread>
-#include <chrono>
 #include <random>
 #include <iostream>
 #include <fstream>
@@ -10,12 +8,8 @@ int main()
 {
     int const N = 175;
     Board board(N);
-    std::mt19937 gen(std::random_device{}());
-    std::uniform_real_distribution<> infected(0., N);
-    for (int i = 0; i != (N * N) / 200; ++i)
-    {
-        board(infected(gen), infected(gen)) = State::Infect;
-    }
+    Display display{N};
+    
     std::ofstream ofs;
     std::ofstream ofs2;
     std::ofstream ofs3;
@@ -25,33 +19,14 @@ int main()
     ofs3.open("dati_R.dat", std::ifstream::out);
     ofs4.open("dati_D.dat", std::ifstream::out);
 
-    /*
-    if (ofs.is_open() && ofs2.is_open() && ofs3.is_open() && ofs4.is_open())
+    std::mt19937 gen(std::random_device{}());
+    std::uniform_real_distribution<> infected(0., N);
+    for (int i = 0; i != (N * N) / 200; ++i)
     {
-        for (int i = 0; i != 100; ++i)
-        {
-            ofs << i << " " << test.GetSIRD().S << '\n';
-            ofs2 << i << " " << test.GetSIRD().I << '\n';
-            ofs3 << i << " " << test.GetSIRD().R << '\n';
-            ofs4 << i << " " << test.GetSird().D << '\n';
-            test.print();
-            test = evolve(test);
-            std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-        }
-        ofs.close();
-        ofs2.close();
-        ofs3.close();
-        ofs4.close();
+        board(infected(gen), infected(gen)) = State::Infect;
     }
-    else
-    {
-        std::cout << "Couldn't open the files" << '\n';
-    }
-    */
-
-    Display display{N};
     display.draw(board);
-    std::cout << "Press any key to start the simulation. \n";
+    std::cout << "Press any key to start the simulation \n";
     display.WaitKeyPressed();
     if (!ofs.is_open() || !ofs2.is_open() || !ofs3.is_open() || !ofs4.is_open())
     {
