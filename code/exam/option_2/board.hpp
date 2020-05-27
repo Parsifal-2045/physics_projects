@@ -212,6 +212,11 @@ public:
     }
 };
 
+inline bool operator==(Board const &lhs, Board const &rhs)
+{
+    return lhs.data() == rhs.data();
+}
+
 inline Board evolve(Board const &current)
 {
     std::mt19937 gen(std::random_device{}());
