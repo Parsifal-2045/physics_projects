@@ -186,6 +186,38 @@ TEST_CASE("Testing spread and heal on board")
     CHECK(test.GetCellState(N + 1, N + 1) == State::Recovered);
     CHECK(test.GetCellState(-1, -1) == State::Recovered);
 
+    SUBCASE("Testing CheckNeighbours")
+    {
+        for(int i = 0; i != N; i++)
+        {
+            for (int j = 0; j != N; j++)
+            {
+                CHECK(test.CheckNeighbours(i, j) == 0);
+            }
+        }
+        test(3, 3) = State::Infect;
+        test(3, 5) = State::Infect;
+        test(5, 3) = State::Infect;
+        test(5, 5) = State::Infect;
+        CHECK(test.CheckNeighbours(4, 4) == 4);
+        test(4, 4) = State::Infect;
+        CHECK(test.CheckNeighbours(4, 4) == 4);
+        test(0, 7) = State::Infect;
+        test(1, 6) = State::Infect;
+        test(2, 7) = State::Infect;
+        test(1, 8) = State::Infect;
+        CHECK(test.CheckNeighbours(1, 7) == 4);
+        test(0, 6) = State::Infect;
+        test(0, 8) = State::Infect;
+        test(2, 6) = State::Infect;
+        test(2, 8) = State::Infect;
+        CHECK(test.CheckNeighbours(1, 7) == 8);
+        test(1, 7) = State::Infect;
+        CHECK(test.CheckNeighbours(1, 7) == 8);
+        test(8, 4) = State::Infect;
+        CHECK(test.CheckNeighbours(8, 4) == 0);
+    }
+
     SUBCASE("Testing infection rate in the board")
     {
         test(2, 3) = State::Infect;
