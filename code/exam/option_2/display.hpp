@@ -40,9 +40,9 @@ public:
         recovered.setOutlineColor(sf::Color::White);
 
         sf::RectangleShape dead(sf::Vector2f(cell_size_, cell_size_));
-        infected.setFillColor(sf::Color::Black);
-        infected.setOutlineThickness(1.f);
-        infected.setOutlineColor(sf::Color::White);
+        dead.setFillColor(sf::Color::Black);
+        dead.setOutlineThickness(1.f);
+        dead.setOutlineColor(sf::Color::White);
 
         int const N = board.size();
 
