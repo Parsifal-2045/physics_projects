@@ -9,12 +9,12 @@
 int main()
 {
     int const N = 175;
-    Board test(N);
+    Board board(N);
     std::mt19937 gen(std::random_device{}());
     std::uniform_real_distribution<> infected(0., N);
     for (int i = 0; i != (N * N) / 200; ++i)
     {
-        test(infected(gen), infected(gen)) = State::Infect;
+        board(infected(gen), infected(gen)) = State::Infect;
     }
     std::ofstream ofs;
     std::ofstream ofs2;
@@ -48,33 +48,39 @@ int main()
         std::cout << "Couldn't open the files" << '\n';
     }
     */
+
     Display display{N};
-    display.draw(test);
+    display.draw(board);
     std::cout << "Press any key to start the simulation. \n";
     display.WaitKeyPressed();
     if (!ofs.is_open() || !ofs2.is_open() || !ofs3.is_open() || !ofs4.is_open())
     {
         std::cout << "Couldn't open the files" << '\n';
     }
-    if (display.WaitKeyPressed() == true && ofs.is_open() && ofs2.is_open() && ofs3.is_open() && ofs4.is_open())
+    if (ofs.is_open() && ofs2.is_open() && ofs3.is_open() && ofs4.is_open())
     {
-        for (int i = 0; i != 80; ++i)
+        for (int i = 0; i != 80; i++)
         {
-            ofs << i << " " << test.GetSIRD().S << '\n';
-            ofs2 << i << " " << test.GetSIRD().I << '\n';
-            ofs3 << i << " " << test.GetSIRD().R << '\n';
-            ofs4 << i << " " << test.GetSIRD().D << '\n';
-            test = evolve(test);
-            display.draw(test);
-            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+            if (display.WaitKeyPressed() == true)
+            {
+                ofs << i << " " << board.GetSIRD().S << '\n';
+                ofs2 << i << " " << board.GetSIRD().I << '\n';
+                ofs3 << i << " " << board.GetSIRD().R << '\n';
+                ofs4 << i << " " << board.GetSIRD().D << '\n';
+                Board temp = board;
+                board = evolve(board);
+                display.draw(board);
+                if (temp == board)
+                {
+                    break;
+                }
+            }
         }
         ofs.close();
         ofs2.close();
         ofs3.close();
         ofs4.close();
-        std::cout << "Press any key to close the window. \n";
-        display.WaitKeyPressed();
-        std::cout << "Program closed" << '\n';
+        std::cout << "Evolution completed" << '\n';
     }
     if (display.WaitKeyPressed() == false)
     {
