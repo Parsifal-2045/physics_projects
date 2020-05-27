@@ -39,6 +39,11 @@ public:
         recovered.setOutlineThickness(1.f);
         recovered.setOutlineColor(sf::Color::White);
 
+        sf::RectangleShape dead(sf::Vector2f(cell_size_, cell_size_));
+        infected.setFillColor(sf::Color::Black);
+        infected.setOutlineThickness(1.f);
+        infected.setOutlineColor(sf::Color::White);
+
         int const N = board.size();
 
         for (int i = 0; i != N; ++i)
@@ -54,6 +59,11 @@ public:
                 {
                     recovered.setPosition(j * cell_size_, i * cell_size_);
                     window_.draw(recovered);
+                }
+                if (board.GetCellState(i, j) == State::Dead)
+                {
+                    dead.setPosition(j * cell_size_, i * cell_size_);
+                    window_.draw(dead);
                 }
             }
         }
