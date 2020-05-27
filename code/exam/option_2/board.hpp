@@ -72,7 +72,7 @@ public:
             {
                 for (int column = 0; column != 2; column++)
                 {
-                    if (GetCellState(i + row, j + column) == State::Infect)
+                    if (GetCellState(i + row, column) == State::Infect)
                     {
                         ++infect;
                     }
@@ -92,7 +92,7 @@ public:
                 }
             }
         }
-        else
+        if(j != 0 && j != size_ - 1)
         {
             for (int row = -1; row != 2; row++)
             {
@@ -181,11 +181,6 @@ public:
                   << "Dead : " << GetSIRD().D << '\n';
     }
 };
-
-inline bool operator==(Board const &lhs, Board const &rhs)
-{
-    return lhs.data() == rhs.data();
-}
 
 inline Board evolve(Board const &current)
 {
