@@ -20,10 +20,10 @@ int main()
     std::ofstream ofs2;
     std::ofstream ofs3;
     std::ofstream ofs4;
-    ofs.open("/home/luca/root/programmazione/exam_option_2/dati_S.dat", std::ifstream::out);
-    ofs2.open("/home/luca/root/programmazione/exam_option_2/dati_I.dat", std::ifstream::out);
-    ofs3.open("/home/luca/root/programmazione/exam_option_2/dati_R.dat", std::ifstream::out);
-    ofs4.open("/home/luca/root/programmazione/exam_option_2/dati_D.dat", std::ifstream::out);
+    ofs.open("dati_S.dat", std::ifstream::out);
+    ofs2.open("dati_I.dat", std::ifstream::out);
+    ofs3.open("dati_R.dat", std::ifstream::out);
+    ofs4.open("dati_D.dat", std::ifstream::out);
 
     /*
     if (ofs.is_open() && ofs2.is_open() && ofs3.is_open() && ofs4.is_open())
