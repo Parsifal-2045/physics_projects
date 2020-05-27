@@ -1,3 +1,5 @@
+#include <thread>
+#include <chrono>
 #include <random>
 #include <iostream>
 #include <fstream>
@@ -6,10 +8,10 @@
 
 int main()
 {
-    int const N = 175;
+    int const N = 150;
     Board board(N);
     Display display{N};
-    
+
     std::ofstream ofs;
     std::ofstream ofs2;
     std::ofstream ofs3;
@@ -36,26 +38,31 @@ int main()
     {
         for (int i = 0; i != 80; i++)
         {
-            if (display.WaitKeyPressed() == true)
+            ofs << i << " " << board.GetSIRD().S << '\n';
+            ofs2 << i << " " << board.GetSIRD().I << '\n';
+            ofs3 << i << " " << board.GetSIRD().R << '\n';
+            ofs4 << i << " " << board.GetSIRD().D << '\n';
+            std::cout << "Day " << i << " - "
+                      << "Susceptibles : " << board.GetSIRD().S << " | "
+                      << "Infected : " << board.GetSIRD().I << " | "
+                      << "Recovered : " << board.GetSIRD().R << " | "
+                      << "Dead : " << board.GetSIRD().D << '\n';
+            Board temp = board;
+            board = evolve(board);
+            display.draw(board);
+
+            if (temp.GetSIRD().I == 0 && board.GetSIRD().I == 0)
             {
-                ofs << i << " " << board.GetSIRD().S << '\n';
-                ofs2 << i << " " << board.GetSIRD().I << '\n';
-                ofs3 << i << " " << board.GetSIRD().R << '\n';
-                ofs4 << i << " " << board.GetSIRD().D << '\n';
-                Board temp = board;
-                board = evolve(board);
-                display.draw(board);
-                if (temp == board)
-                {
-                    break;
-                }
+                break;
             }
+            std::this_thread::sleep_for(std::chrono::milliseconds(1000));
         }
         ofs.close();
         ofs2.close();
         ofs3.close();
         ofs4.close();
         std::cout << "Evolution completed" << '\n';
+        display.WaitKeyPressed();
     }
     if (display.WaitKeyPressed() == false)
     {
