@@ -92,7 +92,7 @@ public:
                 }
             }
         }
-        if(j != 0 && j != size_ - 1)
+        if (j != 0 && j != size_ - 1)
         {
             for (int row = -1; row != 2; row++)
             {
@@ -198,29 +198,9 @@ inline Board evolve(Board const &current)
             std::mt19937 status_gen(std::random_device{}());
             std::uniform_real_distribution<> status_dis(0., 1.);
             auto status = status_dis(status_gen);
-            if (current.GetCellState(i, j) == State::Recovered)
+            switch (current.GetCellState(i, j))
             {
-                next(i, j) = current.GetCellState(i, j);
-                assert(next.GetCellState(i, j) == State::Recovered);
-            }
-            if (current.GetCellState(i, j) == State::Infect)
-            {
-                if (heal_probability >= status)
-                {
-                    next(i, j) = State::Recovered;
-                }
-                else if (death_probability >= status)
-                {
-                    next(i, j) = State::Dead;
-                }
-                else
-                {
-                    next(i, j) = current.GetCellState(i, j);
-                    assert(next.GetCellState(i, j) == State::Infect);
-                }
-            }
-            if (current.GetCellState(i, j) == State::Susceptible)
-            {
+            case State::Susceptible:
                 if (current.CheckNeighbours(i, j) == 0)
                 {
                     next(i, j) = current.GetCellState(i, j);
@@ -240,11 +220,33 @@ inline Board evolve(Board const &current)
                         assert(next.GetCellState(i, j) == State::Susceptible);
                     }
                 }
-            }
-            if (current.GetCellState(i, j) == State::Dead)
-            {
+                break;
+
+            case State::Infect:
+                if (heal_probability >= status)
+                {
+                    next(i, j) = State::Recovered;
+                }
+                else if (death_probability >= status)
+                {
+                    next(i, j) = State::Dead;
+                }
+                else
+                {
+                    next(i, j) = current.GetCellState(i, j);
+                    assert(next.GetCellState(i, j) == State::Infect);
+                }
+                break;
+
+            case State::Recovered:
+                next(i, j) = current.GetCellState(i, j);
+                assert(next.GetCellState(i, j) == State::Recovered);
+                break;
+
+            case State::Dead:
                 next(i, j) = current.GetCellState(i, j);
                 assert(next.GetCellState(i, j) == State::Dead);
+                break;
             }
         }
     }
