@@ -34,7 +34,7 @@ int main()
     {
         std::cout << "Couldn't open the files" << '\n';
     }
-    if (ofs.is_open() && ofs2.is_open() && ofs3.is_open() && ofs4.is_open())
+    if (display.WaitKeyPressed() == true && ofs.is_open() && ofs2.is_open() && ofs3.is_open() && ofs4.is_open())
     {
         for (int i = 0; i != 80; i++)
         {
@@ -42,14 +42,14 @@ int main()
             ofs2 << i << " " << board.GetSIRD().I << '\n';
             ofs3 << i << " " << board.GetSIRD().R << '\n';
             ofs4 << i << " " << board.GetSIRD().D << '\n';
-            std::cout << "Day " << i << " - "
-                      << "Susceptibles : " << board.GetSIRD().S << " | "
-                      << "Infected : " << board.GetSIRD().I << " | "
-                      << "Recovered : " << board.GetSIRD().R << " | "
-                      << "Dead : " << board.GetSIRD().D << '\n';
             Board temp = board;
             board = evolve(board);
             display.draw(board);
+            std::cout << "Day " << i << " - "
+                      << "Susceptibles : " << temp.GetSIRD().S << " | "
+                      << "Infected : " << temp.GetSIRD().I << " | "
+                      << "Recovered : " << temp.GetSIRD().R << " | "
+                      << "Dead : " << temp.GetSIRD().D << '\n';
 
             if (temp.GetSIRD().I == 0 && board.GetSIRD().I == 0)
             {
