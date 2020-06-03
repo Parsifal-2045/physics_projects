@@ -13,15 +13,13 @@ private:
     static constexpr int cell_size_ = 5;
     static int display_side(int board_side)
     {
-        return (board_side - 6) * cell_size_;
+        return board_side * cell_size_;
     }
     static constexpr auto window_title = "Evolution of an epidemic";
 
 public:
     Display(int board_side) : board_side_{board_side},
-                              window_{sf::VideoMode(display_side(board_side), display_side(board_side)),
-                                      window_title,
-                                      sf::Style::Close}
+                              window_{sf::VideoMode(display_side(board_side), display_side(board_side)), window_title, sf::Style::Close}
     {
     }
     void draw(Board const &board)
