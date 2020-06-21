@@ -153,8 +153,7 @@ public:
         {
             for (int j = 0; j != size_; j++)
             {
-                auto status = static_cast<int>(data_[i * size_ + j]);
-                assert(status >= 0 && status <= 3);
+                assert(static_cast<int>(data_[i * size_ + j]) >= 0 && static_cast<int>(data_[i * size_ + j]) <= 3);
                 switch (GetCellState(i, j))
                 {
                 case State::Susceptible:
