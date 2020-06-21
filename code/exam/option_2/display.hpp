@@ -48,20 +48,22 @@ public:
         {
             for (int j = 0; j != N; ++j)
             {
-                if (board.GetCellState(i, j) == State::Infect)
+                switch (board.GetCellState(i, j))
                 {
+                case State::Infect:
                     infected.setPosition(j * cell_size_, i * cell_size_);
                     window_.draw(infected);
-                }
-                if (board.GetCellState(i, j) == State::Recovered)
-                {
+                    break;
+                case State::Recovered:
                     recovered.setPosition(j * cell_size_, i * cell_size_);
                     window_.draw(recovered);
-                }
-                if (board.GetCellState(i, j) == State::Dead)
-                {
+                    break;
+                case State::Dead:
                     dead.setPosition(j * cell_size_, i * cell_size_);
                     window_.draw(dead);
+                    break;
+                default:
+                    break;
                 }
             }
         }
