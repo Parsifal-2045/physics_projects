@@ -20,6 +20,10 @@ int main()
     ofs2.open("dati_I.dat", std::ifstream::out);
     ofs3.open("dati_R.dat", std::ifstream::out);
     ofs4.open("dati_D.dat", std::ifstream::out);
+    if (!ofs.is_open() || !ofs2.is_open() || !ofs3.is_open() || !ofs4.is_open())
+    {
+        std::cout << "Couldn't open the files" << '\n';
+    }
 
     std::mt19937 gen(std::random_device{}());
     std::uniform_real_distribution<> infected(0., N);
@@ -27,13 +31,9 @@ int main()
     {
         board(infected(gen), infected(gen)) = State::Infect;
     }
+
     display.draw(board);
     std::cout << "Press any key to start the simulation \n";
-    display.WaitKeyPressed();
-    if (!ofs.is_open() || !ofs2.is_open() || !ofs3.is_open() || !ofs4.is_open())
-    {
-        std::cout << "Couldn't open the files" << '\n';
-    }
     if (display.WaitKeyPressed() == true && ofs.is_open() && ofs2.is_open() && ofs3.is_open() && ofs4.is_open())
     {
         for (int i = 0; i != 80; i++)
@@ -61,8 +61,7 @@ int main()
         ofs2.close();
         ofs3.close();
         ofs4.close();
-        std::cout << "Evolution completed" << '\n';
-        display.WaitKeyPressed();
+        std::cout << "Evolution completed, press any key to close the window" << '\n';
     }
     if (display.WaitKeyPressed() == false)
     {
