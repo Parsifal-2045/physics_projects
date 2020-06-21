@@ -36,7 +36,7 @@ int main()
     std::cout << "Press any key to start the simulation \n";
     if (display.WaitKeyPressed() == true && ofs.is_open() && ofs2.is_open() && ofs3.is_open() && ofs4.is_open())
     {
-        for (int i = 0; i != 80; i++)
+        for (int i = 0; i != 200; i++)
         {
             ofs << i << " " << board.GetSIRD().S << '\n';
             ofs2 << i << " " << board.GetSIRD().I << '\n';
