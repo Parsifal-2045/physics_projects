@@ -111,34 +111,33 @@ public:
 
     SIRD GetSIRD()
     {
-        int sus = 0;
-        int inf = 0;
-        int rec = 0;
+        int susceptibles = 0;
+        int infected = 0;
+        int recovered = 0;
         int dead = 0;
         for (int i = 0; i != size_; i++)
         {
             for (int j = 0; j != size_; j++)
             {
-                if (GetCellState(i, j) == State::Susceptible)
+                switch (GetCellState(i, j))
                 {
-                    ++sus;
-                }
-                if (GetCellState(i, j) == State::Infect)
-                {
-                    ++inf;
-                }
-                if (GetCellState(i, j) == State::Recovered)
-                {
-                    ++rec;
-                }
-                if (GetCellState(i, j) == State::Dead)
-                {
+                case State::Susceptible:
+                    ++susceptibles;
+                    break;
+                case State::Infect:
+                    ++infected;
+                    break;
+                case State::Recovered:
+                    ++recovered;
+                    break;
+                case State::Dead:
                     ++dead;
+                    break;
                 }
             }
         }
-        assert(sus + inf + rec + dead == static_cast<int>(data_.size()));
-        return SIRD{sus, inf, rec, dead};
+        assert(susceptibles + infected + recovered + dead == static_cast<int>(data_.size()));
+        return SIRD{susceptibles, infected, recovered, dead};
     }
 
     void print()
@@ -156,21 +155,23 @@ public:
             {
                 auto status = static_cast<int>(data_[i * size_ + j]);
                 assert(status >= 0 && status <= 3);
-                if (status == 0)
+                switch (GetCellState(i, j))
                 {
+                case State::Susceptible:
                     std::cout << "o ";
-                }
-                if (status == 1)
-                {
+                    break;
+                case State::Infect:
                     std::cout << magenta << "i " << reset;
-                }
-                if (status == 2)
-                {
+                    break;
+                case State::Recovered:
                     std::cout << green << "o " << reset;
-                }
-                if (status == 3)
-                {
+                    break;
+                case State::Dead:
                     std::cout << red << "x " << reset;
+                    break;
+
+                default:
+                    break;
                 }
             }
             std::cout << '\n';
