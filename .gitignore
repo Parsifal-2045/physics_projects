@@ -2,3 +2,4 @@ code/.vscode/settings.json
 *.out
 *.dat
 *.pdf
+*.root
