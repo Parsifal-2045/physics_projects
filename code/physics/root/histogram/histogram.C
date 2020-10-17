@@ -1,3 +1,9 @@
+#include <TROOT.h>
+#include <TStyle.h>
+#include <TH1.h>
+#include <TCanvas.h>
+#include <iostream>
+
 void setStyle()
 {
     gROOT->SetStyle("Plain");
