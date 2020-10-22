@@ -16,10 +16,11 @@ int main()
     Particle::AddParticleType("Test 7", 7, 7, 7);
     Particle::AddParticleType("Test 8", 8, 8, 8);
     Particle::AddParticleType("Test 9", 9, 9, 9);
-    Particle::AddParticleType("Test 10", 10, 10, 10);
     Particle p{"Test 0", 0, 0, 0};
-    p.PrintParticle();
-    p.SetP(2, 2, 2);
+    {
+        Particle p2{"Test 2", 2, 2, 2};
+    }
+    Particle::PrintIndex();
     p.PrintParticle();
 }
 
@@ -35,6 +36,4 @@ int main()
     Particle::AddParticleType("Test 7", 7, 7, 7);
     Particle::AddParticleType("Test 8", 8, 8, 8);
     Particle::AddParticleType("Test 9", 9, 9, 9);
-    Particle::AddParticleType("Test 10", 10, 10, 10);
-
 */
