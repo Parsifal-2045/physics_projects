@@ -10,6 +10,7 @@ private:
 
 public:
     ResonanceType(std::string const &name, double const mass, int const charge, double const width);
+    ~ResonanceType();
     double GetWidth() const;
     void Print() const;
 };
