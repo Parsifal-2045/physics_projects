@@ -4,6 +4,8 @@
 ParticleType::ParticleType(std::string const &name, double const mass, int const charge)
     : name_{name}, mass_{mass}, charge_{charge} {}
 
+ParticleType::~ParticleType() = default;
+
 std::string ParticleType::GetName() const
 {
     return name_;
