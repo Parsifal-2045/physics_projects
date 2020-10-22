@@ -2,17 +2,16 @@
 
 #include <iostream>
 
-ResonanceType::ResonanceType(std::string const &name = {}, double const mass = {}, int const charge = {},
-                             double const width = {}) : name_{name}, mass_{mass}, charge_{charge},
-                                                        width_{width} {}
+ResonanceType::ResonanceType(std::string const &name, double const mass, int const charge,
+                             double const width) : ParticleType(name, mass, charge), width_{width} {}
 
-double const ResonanceType::GetWidth()
+double ResonanceType::GetWidth() const
 {
     return width_;
 }
 
-void ResonanceType::print() const
+void ResonanceType::Print() const
 {
-    ParticleType::print();
-    std::cout << "Resonance width: " << width_ << '\n';
+    ParticleType::Print();
+    std::cout << "Width: " << width_ << '\n';
 }

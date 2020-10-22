@@ -12,10 +12,10 @@ private:
 
 public:
     ParticleType(std::string const &name, double const mass, int const charge);
-    std::string const GetName();
-    double const GetMass();
-    int const GetCharge();
-    virtual void print() const;
+    std::string GetName() const;
+    double GetMass() const;
+    int GetCharge() const;
+    virtual void Print() const;
 };
 
 #endif

@@ -6,15 +6,12 @@
 class ResonanceType : public ParticleType
 {
 private:
-    std::string const name_;
-    double const mass_;
-    int const charge_;
     double const width_;
 
 public:
     ResonanceType(std::string const &name, double const mass, int const charge, double const width);
-    double const GetWidth();
-    void print() const;
+    double GetWidth() const;
+    void Print() const;
 };
 
 #endif
