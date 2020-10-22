@@ -4,6 +4,7 @@
 #include "particle.hpp"
 
 int Particle::NParticleType_ = 0;
+int Particle::NParticles_ = 0;
 std::vector<ParticleType *> Particle::Index_;
 
 int Particle::FindParticle(std::string const &name)
@@ -37,10 +38,23 @@ int Particle::FindParticle(std::string const &name)
 
 Particle::Particle(std::string const &name, double Px = 0, double Py = 0, double Pz = 0)
 {
+    ++NParticles_;
     Px_ = Px;
     Py_ = Py;
     Pz_ = Pz;
     IndexParticle_ = FindParticle(name);
+}
+
+Particle::~Particle()
+{
+    --NParticles_;
+    if (NParticles_ == 0)
+    {
+        for (auto value : Index_)
+        {
+            delete value;
+        }
+    }
 }
 
 int Particle::GetIndexPosition() const
@@ -89,12 +103,12 @@ void Particle::AddParticleType(std::string const &name, double const mass, int c
         }
         else if (FindParticle(name) <= static_cast<int>(Index_.size()))
         {
-            std::cout << name << " already added" << '\n';
+            std::cout << "Already added " << name << '\n';
         }
     }
     else
     {
-        std::cout << "Maximum number of Particle Types reached" << '\n';
+        std::cout << "Cannot add " << name << ". Maximum number of Particle Types reached" << '\n';
     }
 }
 
@@ -159,7 +173,7 @@ void Particle::PrintIndex()
 
 void Particle::PrintParticle()
 {
-    std::cout << "Index: " << IndexParticle_ << '\n';
-    std::cout << "Name: " << Index_[IndexParticle_]->GetName() << '\n';
+    std::cout << "Particle name: " << Index_[IndexParticle_]->GetName() << '\n';
+    std::cout << "Index position: " << IndexParticle_ << '\n';
     std::cout << "P: " << Px_ << "i " << Py_ << "j " << Pz_ << "k " << '\n';
 }

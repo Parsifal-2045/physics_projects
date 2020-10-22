@@ -10,9 +10,10 @@
 class Particle
 {
 private:
-    static int const MaxNumParticleType_ = 10;
+    static int const MaxNumParticleType_ = 9;
     static std::vector<ParticleType *> Index_;
     static int NParticleType_;
+    static int NParticles_;
     int IndexParticle_;
     double Px_;
     double Py_;
@@ -21,6 +22,7 @@ private:
 
 public:
     Particle(std::string const &name, double Px, double Py, double Pz);
+    ~Particle();
     int GetIndexPosition() const;
     double GetMass() const;
     double GetPx() const;
