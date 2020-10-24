@@ -21,6 +21,11 @@ int ParticleType::GetCharge() const
     return charge_;
 }
 
+double ParticleType::GetWidth() const
+{
+    return 0.;
+}
+
 void ParticleType::Print() const
 {
     std::cout << "Name: " << name_ << '\n';
