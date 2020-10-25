@@ -16,12 +16,13 @@ int main()
     Particle::AddParticleType("Test 7", 7, 7, 7);
     Particle::AddParticleType("Test 8", 8, 8, 8);
     Particle::AddParticleType("Test 9", 9, 9, 9);
-    Particle p{"Test 0", 0, 0, 0};
     {
-        Particle p2{"Test 2", 2, 2, 2};
+        Particle p{"Test 0", 0, 0, 0};
     }
+    Particle p2{"Test 2", 2, 2, 2};
     Particle::PrintIndex();
-    p.PrintParticle();
+    p2.PrintParticle();
+    Particle::Destructor();
 }
 
 /*  Set of 10 Particles for testing

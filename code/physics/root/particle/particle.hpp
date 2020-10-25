@@ -13,16 +13,16 @@ private:
     static int const MaxNumParticleType_ = 9;
     static std::vector<ParticleType *> Index_;
     static int NParticleType_;
-    static int NParticles_;
     int IndexParticle_;
     double Px_;
     double Py_;
     double Pz_;
     static int FindParticle(std::string const &name);
+    void Boost(double bx, double by, double bz);
 
 public:
     Particle(std::string const &name, double Px, double Py, double Pz);
-    ~Particle();
+    static void Destructor();
     int GetIndexPosition() const;
     double GetMass() const;
     double GetPx() const;
@@ -31,9 +31,10 @@ public:
     static void AddParticleType(std::string const &name, double const mass, int const charge, double width);
     void SetAttribute(int const i);
     void SetAttribute(std::string const &name);
-    double TotalEnergy() const;
+    double GetEnergy() const;
     double InvMass(Particle &p) const;
     void SetP(double Px, double Py, double Pz);
+    int Decay2Body(Particle &dau1, Particle &dau2) const;
     static void PrintIndex();
     void PrintParticle();
 };
