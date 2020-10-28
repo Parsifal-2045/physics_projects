@@ -21,6 +21,7 @@ private:
     void Boost(double bx, double by, double bz);
 
 public:
+    Particle();
     Particle(std::string const &name, double Px, double Py, double Pz);
     static void Destructor();
     int GetIndexPosition() const;
