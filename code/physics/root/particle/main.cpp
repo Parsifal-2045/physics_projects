@@ -1,5 +1,6 @@
 #include <iostream>
 #include <vector>
+#include <memory>
 #include <TRandom.h>
 #include <TMath.h>
 #include <TH1.h>
@@ -19,12 +20,12 @@ int main()
     Particle::AddParticleType("P-", 0.93827, -1, 0);
     Particle::AddParticleType("K*", 0.89166, 0, 0.050);
 
-    TH1F *particle_type = new TH1F("particle_type", "Types of particles generated", 7, 0, 7);
-    TH1F *polar_angle = new TH1F("polar_angle", "Polar Angle", 100, 0, TMath::Pi());
-    TH1F *azimutal_angle = new TH1F("azimutal_angle", "Azimutal Angle", 100, 0, 2 * TMath::Pi());
-    TH1F *impulse = new TH1F("impulse", "Impulse module", 100, 0, 7);
-    TH1F *trasversal_impulse = new TH1F("trasversal_impulse", "Trasversal Impulse", 100, 0, 7);
-    TH1F *energy = new TH1F("energy", "Total Energy", 100, 0, 7);
+    std::unique_ptr<TH1F> particle_type(new TH1F("particle_type", "Types of particles generated", 7, 0, 7));
+    std::unique_ptr<TH1F> polar_angle(new TH1F("polar_angle", "Polar Angle", 100, 0, TMath::Pi()));
+    std::unique_ptr<TH1F> azimutal_angle(new TH1F("azimutal_angle", "Azimutal Angle", 100, 0, 2 * TMath::Pi()));
+    std::unique_ptr<TH1F> impulse(new TH1F("impulse", "Impulse module", 100, 0, 7));
+    std::unique_ptr<TH1F> trasversal_impulse(new TH1F("trasversal_impulse", "Trasversal Impulse", 100, 0, 7));
+    std::unique_ptr<TH1F> energy(new TH1F("energy", "Total Energy", 100, 0, 7));
 
     gRandom->SetSeed();
     int N = 120;
@@ -112,22 +113,22 @@ int main()
         }
     }
 
-    TCanvas *c = new TCanvas("c", "Prova");
+    std::unique_ptr<TCanvas> c(new TCanvas("c", "Prova"));
     c->Divide(3, 2);
     c->cd(1);
-    particle_type->DrawCopy("E, H");
+    particle_type->Draw("E, H");
     c->cd(2);
-    azimutal_angle->DrawCopy("E, H");
+    azimutal_angle->Draw("E, H");
     c->cd(3);
-    polar_angle->DrawCopy("E, H");
+    polar_angle->Draw("E, H");
     c->cd(4);
-    impulse->DrawCopy("E, H");
+    impulse->Draw("E, H");
     c->cd(5);
-    trasversal_impulse->DrawCopy("E, H");
+    trasversal_impulse->Draw("E, H");
     c->cd(6);
-    energy->DrawCopy("E, H");
+    energy->Draw("E, H");
 
-    TFile *f = new TFile("Histograms.root", "RECREATE");
+    std::unique_ptr<TFile> f(new TFile("Histograms.root", "RECREATE"));
     particle_type->Write();
     polar_angle->Write();
     azimutal_angle->Write();
@@ -138,12 +139,4 @@ int main()
     f->Close();
 
     Particle::Destructor();
-    delete particle_type;
-    delete polar_angle;
-    delete azimutal_angle;
-    delete impulse;
-    delete trasversal_impulse;
-    delete energy;
-    delete c;
-    delete f;
 }
