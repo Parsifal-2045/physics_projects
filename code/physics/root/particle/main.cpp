@@ -26,6 +26,12 @@ int main()
     std::unique_ptr<TH1F> impulse(new TH1F("impulse", "Impulse module", 100, 0, 7));
     std::unique_ptr<TH1F> trasversal_impulse(new TH1F("trasversal_impulse", "Trasversal Impulse", 100, 0, 7));
     std::unique_ptr<TH1F> energy(new TH1F("energy", "Total Energy", 100, 0, 7));
+    std::unique_ptr<TH1F> tot_inv_mass(new TH1F("tot_inv_mass", "Invariant mass", 100, 0, 7));
+    std::unique_ptr<TH1F> disc_inv_mass(new TH1F("disc_inv_mass", "Invariant mass of particles with opposite polarity", 100, 0, 7));
+    std::unique_ptr<TH1F> same_inv_mass(new TH1F("same_inv_mass", "Invariant mass of particles with same polarity", 100, 0, 7));
+    std::unique_ptr<TH1F> disc_pi_k(new TH1F("disc_pi_k", "Invariant mass of couples Pi, K with opposite polarity", 100, 0, 7));
+    std::unique_ptr<TH1F> same_pi_k(new TH1F("same_pi_k", "Invariant mass of couples Pi, K with same polarity", 100, 0, 7));
+    std::unique_ptr<TH1F> decay_inv_mass(new TH1F("decay_inv_mass", "Invariant mass of particles generated after a K* decay", 100, 0, 2));
 
     gRandom->SetSeed();
     int N = 120;
@@ -107,26 +113,87 @@ int main()
                 k++;
                 event[100 + k] = dau2;
                 k++;
+                decay_inv_mass->Fill(dau1.InvMass(dau2));
             }
             particle_type->Fill(p.GetIndexPosition());
             event[j] = p;
+            if (j > 0)
+            {
+                tot_inv_mass->Fill(event[0].InvMass(event[j]));
+                if (event[0].GetIndexPosition() % 2 == 0)
+                {
+                    if (event[j].GetIndexPosition() % 2 == 0)
+                    {
+                        same_inv_mass->Fill(event[0].InvMass(event[j]));
+                    }
+                    else
+                    {
+                        disc_inv_mass->Fill(event[0].InvMass(event[j]));
+                    }
+                }
+                else if (event[0].GetIndexPosition() % 2 != 0)
+                {
+                    if (event[j].GetIndexPosition() % 2 != 0)
+                    {
+                        same_inv_mass->Fill(event[0].InvMass(event[j]));
+                    }
+                    else
+                    {
+                        disc_inv_mass->Fill(event[0].InvMass(event[j]));
+                    }
+                }
+                for (auto particle : event)
+                {
+                    if (particle.GetIndexPosition() == 0 && event[j].GetIndexPosition() == 3)
+                    {
+                        disc_pi_k->Fill(particle.InvMass(event[j]));
+                    }
+                    else if (particle.GetIndexPosition() == 1 && event[j].GetIndexPosition() == 2)
+                    {
+                        disc_pi_k->Fill(particle.InvMass(event[j]));
+                    }
+                    else if (particle.GetIndexPosition() == 0 && event[j].GetIndexPosition() == 2)
+                    {
+                        same_pi_k->Fill(particle.InvMass(event[j]));
+                    }
+                    else if (particle.GetIndexPosition() == 1 && event[j].GetIndexPosition() == 3)
+                    {
+                        same_pi_k->Fill(particle.InvMass(event[j]));
+                    }
+                }
+            }
         }
     }
 
-    std::unique_ptr<TCanvas> c(new TCanvas("c", "Prova"));
-    c->Divide(3, 2);
-    c->cd(1);
+    std::unique_ptr<TCanvas> c1(new TCanvas("c1", "Particle types, angles and kinetics"));
+    c1->Divide(3, 2);
+    c1->cd(1);
     particle_type->Draw("E, H");
-    c->cd(2);
+    c1->cd(2);
     azimutal_angle->Draw("E, H");
-    c->cd(3);
+    c1->cd(3);
     polar_angle->Draw("E, H");
-    c->cd(4);
+    c1->cd(4);
     impulse->Draw("E, H");
-    c->cd(5);
+    c1->cd(5);
     trasversal_impulse->Draw("E, H");
-    c->cd(6);
+    c1->cd(6);
     energy->Draw("E, H");
+
+    std::unique_ptr<TCanvas> c2(new TCanvas("c2", "Invariant mass"));
+    c2->Divide(3, 2);
+    c2->cd(1);
+    tot_inv_mass->Draw("E, H");
+    c2->cd(2);
+    disc_inv_mass->Draw("E, H");
+    c2->cd(3);
+    same_inv_mass->Draw("E, H");
+    c2->cd(4);
+    disc_pi_k->Draw("E, H");
+    c2->cd(5);
+    same_pi_k->Draw("E, H");
+    c2->cd(6);
+    decay_inv_mass->Draw("E, H");
 
     std::unique_ptr<TFile> f(new TFile("Histograms.root", "RECREATE"));
     particle_type->Write();
@@ -135,7 +202,14 @@ int main()
     impulse->Write();
     trasversal_impulse->Write();
     energy->Write();
-    c->Write();
+    tot_inv_mass->Write();
+    disc_inv_mass->Write();
+    same_inv_mass->Write();
+    disc_pi_k->Write();
+    same_pi_k->Write();
+    decay_inv_mass->Write();
+    c1->Write();
+    c2->Write();
     f->Close();
 
     Particle::Destructor();
