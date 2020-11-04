@@ -20,18 +20,31 @@ int main()
     Particle::AddParticleType("P-", 0.93827, -1, 0);
     Particle::AddParticleType("K*", 0.89166, 0, 0.050);
 
-    std::unique_ptr<TH1F> particle_type(new TH1F("particle_type", "Types of particles generated", 7, 0, 7));
-    std::unique_ptr<TH1F> polar_angle(new TH1F("polar_angle", "Polar Angle", 100, 0, TMath::Pi()));
-    std::unique_ptr<TH1F> azimutal_angle(new TH1F("azimutal_angle", "Azimutal Angle", 100, 0, 2 * TMath::Pi()));
-    std::unique_ptr<TH1F> impulse(new TH1F("impulse", "Impulse module", 100, 0, 7));
-    std::unique_ptr<TH1F> trasversal_impulse(new TH1F("trasversal_impulse", "Trasversal Impulse", 100, 0, 7));
-    std::unique_ptr<TH1F> energy(new TH1F("energy", "Total Energy", 100, 0, 7));
-    std::unique_ptr<TH1F> tot_inv_mass(new TH1F("tot_inv_mass", "Invariant mass", 100, 0, 7));
-    std::unique_ptr<TH1F> disc_inv_mass(new TH1F("disc_inv_mass", "Invariant mass of particles with opposite polarity", 100, 0, 7));
-    std::unique_ptr<TH1F> same_inv_mass(new TH1F("same_inv_mass", "Invariant mass of particles with same polarity", 100, 0, 7));
-    std::unique_ptr<TH1F> disc_pi_k(new TH1F("disc_pi_k", "Invariant mass of couples Pi, K with opposite polarity", 100, 0, 7));
-    std::unique_ptr<TH1F> same_pi_k(new TH1F("same_pi_k", "Invariant mass of couples Pi, K with same polarity", 100, 0, 7));
-    std::unique_ptr<TH1F> decay_inv_mass(new TH1F("decay_inv_mass", "Invariant mass of particles generated after a K* decay", 100, 0, 2));
+    std::vector<TH1F *> histograms;
+    TH1F *particle_type = new TH1F("particle_type", "Types of particles generated", 7, 0, 7);
+    histograms.push_back(particle_type);
+    TH1F *polar_angle = new TH1F("polar_angle", "Polar Angle", 100, 0, TMath::Pi());
+    histograms.push_back(polar_angle);
+    TH1F *azimutal_angle = new TH1F("azimutal_angle", "Azimutal Angle", 100, 0, 2 * TMath::Pi());
+    histograms.push_back(azimutal_angle);
+    TH1F *impulse = new TH1F("impulse", "Impulse module", 100, 0, 7);
+    histograms.push_back(impulse);
+    TH1F *trasversal_impulse = new TH1F("trasversal_impulse", "Trasversal Impulse", 100, 0, 5);
+    histograms.push_back(trasversal_impulse);
+    TH1F *energy = new TH1F("energy", "Total Energy", 100, 0, 7);
+    histograms.push_back(energy);
+    TH1F *tot_inv_mass = new TH1F("tot_inv_mass", "Invariant mass", 100, 0, 2);
+    histograms.push_back(tot_inv_mass);
+    TH1F *disc_inv_mass = new TH1F("disc_inv_mass", "Invariant mass of particles with opposite polarity", 80, 0, 2);
+    histograms.push_back(disc_inv_mass);
+    TH1F *same_inv_mass = new TH1F("same_inv_mass", "Invariant mass of particles with same polarity", 80, 0, 2);
+    histograms.push_back(same_inv_mass);
+    TH1F *disc_pi_k = new TH1F("disc_pi_k", "Invariant mass of couples Pi, K with opposite polarity", 80, 0, 2);
+    histograms.push_back(disc_pi_k);
+    TH1F *same_pi_k = new TH1F("same_pi_k", "Invariant mass of couples Pi, K with same polarity", 80, 0, 2);
+    histograms.push_back(same_pi_k);
+    TH1F *decay_inv_mass = new TH1F("decay_inv_mass", "Invariant mass of particles generated after a K* decay", 80, 0, 2);
+    histograms.push_back(decay_inv_mass);
 
     gRandom->SetSeed();
     int N = 120;
@@ -117,49 +130,49 @@ int main()
             }
             particle_type->Fill(p.GetIndexPosition());
             event[j] = p;
-            if (j > 0)
+        }
+        for (int j = 1; j != N; j++)
+        {
+            tot_inv_mass->Fill(event[0].InvMass(event[j]));
+            if (event[0].GetIndexPosition() % 2 == 0)
             {
-                tot_inv_mass->Fill(event[0].InvMass(event[j]));
-                if (event[0].GetIndexPosition() % 2 == 0)
+                if (event[j].GetIndexPosition() % 2 == 0)
                 {
-                    if (event[j].GetIndexPosition() % 2 == 0)
-                    {
-                        same_inv_mass->Fill(event[0].InvMass(event[j]));
-                    }
-                    else
-                    {
-                        disc_inv_mass->Fill(event[0].InvMass(event[j]));
-                    }
+                    same_inv_mass->Fill(event[0].InvMass(event[j]));
                 }
-                else if (event[0].GetIndexPosition() % 2 != 0)
+                else
                 {
-                    if (event[j].GetIndexPosition() % 2 != 0)
-                    {
-                        same_inv_mass->Fill(event[0].InvMass(event[j]));
-                    }
-                    else
-                    {
-                        disc_inv_mass->Fill(event[0].InvMass(event[j]));
-                    }
+                    disc_inv_mass->Fill(event[0].InvMass(event[j]));
                 }
-                for (auto particle : event)
+            }
+            else if (event[0].GetIndexPosition() % 2 != 0)
+            {
+                if (event[j].GetIndexPosition() % 2 != 0)
                 {
-                    if (particle.GetIndexPosition() == 0 && event[j].GetIndexPosition() == 3)
-                    {
-                        disc_pi_k->Fill(particle.InvMass(event[j]));
-                    }
-                    else if (particle.GetIndexPosition() == 1 && event[j].GetIndexPosition() == 2)
-                    {
-                        disc_pi_k->Fill(particle.InvMass(event[j]));
-                    }
-                    else if (particle.GetIndexPosition() == 0 && event[j].GetIndexPosition() == 2)
-                    {
-                        same_pi_k->Fill(particle.InvMass(event[j]));
-                    }
-                    else if (particle.GetIndexPosition() == 1 && event[j].GetIndexPosition() == 3)
-                    {
-                        same_pi_k->Fill(particle.InvMass(event[j]));
-                    }
+                    same_inv_mass->Fill(event[0].InvMass(event[j]));
+                }
+                else
+                {
+                    disc_inv_mass->Fill(event[0].InvMass(event[j]));
+                }
+            }
+            for (auto particle : event)
+            {
+                if (particle.GetIndexPosition() == 0 && event[j].GetIndexPosition() == 3)
+                {
+                    disc_pi_k->Fill(particle.InvMass(event[j]));
+                }
+                else if (particle.GetIndexPosition() == 1 && event[j].GetIndexPosition() == 2)
+                {
+                    disc_pi_k->Fill(particle.InvMass(event[j]));
+                }
+                else if (particle.GetIndexPosition() == 0 && event[j].GetIndexPosition() == 2)
+                {
+                    same_pi_k->Fill(particle.InvMass(event[j]));
+                }
+                else if (particle.GetIndexPosition() == 1 && event[j].GetIndexPosition() == 3)
+                {
+                    same_pi_k->Fill(particle.InvMass(event[j]));
                 }
             }
         }
@@ -195,7 +208,7 @@ int main()
     c2->cd(6);
     decay_inv_mass->Draw("E, H");
 
-    std::unique_ptr<TFile> f(new TFile("Histograms.root", "RECREATE"));
+    std::unique_ptr<TFile> f(new TFile("histograms.root", "RECREATE"));
     particle_type->Write();
     polar_angle->Write();
     azimutal_angle->Write();
@@ -213,4 +226,8 @@ int main()
     f->Close();
 
     Particle::Destructor();
+    for (auto histo : histograms)
+    {
+        delete histo;
+    }
 }
