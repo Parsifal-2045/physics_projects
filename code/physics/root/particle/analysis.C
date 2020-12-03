@@ -79,7 +79,6 @@ void analysis()
     decay_inv_mass->GetXaxis()->SetTitle("Mass [GeV]");
     std::cout << red << "Fit stats for invariant mass only of products of the decay (control): " << reset << '\n';
     decay_inv_mass->Fit("gaus");
-    decay_inv_mass->Draw("E, H, SAME");
     f = decay_inv_mass->GetFunction("gaus");
     std::cout << cyan << "Mean (K* mass): " << f->GetParameter(1) << " +/- " << f->GetParError(1) << '\n';
     std::cout << cyan << "Sigma (K* width): " << f->GetParameter(2) << " +/- " << f->GetParError(2) << reset << '\n';
@@ -92,10 +91,9 @@ void analysis()
     diff_disc_same_tot->GetXaxis()->SetTitle("Mass [GeV]");
     std::cout << red << "Fit stats for total invariant mass: " << reset << '\n';
     diff_disc_same_tot->Fit("gaus");
-    diff_disc_same_tot->Draw("E, H, SAME");
     f = diff_disc_same_tot->GetFunction("gaus");
-    std::cout << cyan << "Mean (K* mass): " << f->GetParameter(1) << " +/- " << f->GetParError(1) << '\n';
-    std::cout << cyan << "Sigma (K* width): " << f->GetParameter(2) << " +/- " << f->GetParError(2) << reset << '\n';
+    std::cout << cyan << "Mean: " << f->GetParameter(1) << " +/- " << f->GetParError(1) << '\n';
+    std::cout << cyan << "Sigma: " << f->GetParameter(2) << " +/- " << f->GetParError(2) << reset << '\n';
 
     TH1F *disc_pi_k = (TH1F *)file->Get("disc_pi_k");
     TH1F *same_pi_k = (TH1F *)file->Get("same_pi_k");
@@ -105,7 +103,6 @@ void analysis()
     diff_disc_same_pi_k->GetXaxis()->SetTitle("Mass [GeV]");
     std::cout << red << "Fit stats for invariant mass of Pions and Kaons: " << reset << '\n';
     diff_disc_same_pi_k->Fit("gaus");
-    diff_disc_same_pi_k->Draw("E, H, SAME");
     f = diff_disc_same_pi_k->GetFunction("gaus");
     std::cout << cyan << "Mean (K* mass): " << f->GetParameter(1) << " +/- " << f->GetParError(1) << '\n';
     std::cout << cyan << "Sigma (K* width): " << f->GetParameter(2) << " +/- " << f->GetParError(2) << reset << '\n';
@@ -147,4 +144,5 @@ void analysis()
     }
     c1->Write();
     c2->Write();
+    result->Close();
 }
