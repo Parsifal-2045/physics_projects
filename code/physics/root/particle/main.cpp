@@ -230,5 +230,5 @@ int main()
     {
         delete histo;
     }
-    std::cout << "Generated 10'000'000 of partycles, use analysis.C to see the results" << '\n';
+    std::cout << "Generated 10'000 events, use analysis.C to see the results" << '\n';
 }
