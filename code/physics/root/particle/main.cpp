@@ -23,11 +23,11 @@ int main()
     std::vector<TH1F *> histograms;
     TH1F *particle_type = new TH1F("particle_type", "Types of particles generated", 7, 0, 7);
     histograms.push_back(particle_type);
-    TH1F *polar_angle = new TH1F("polar_angle", "Polar Angle", 100, 0, TMath::Pi());
+    TH1F *polar_angle = new TH1F("polar_angle", "Polar angle distribution", 100, 0, TMath::Pi());
     histograms.push_back(polar_angle);
-    TH1F *azimutal_angle = new TH1F("azimutal_angle", "Azimutal Angle", 100, 0, 2 * TMath::Pi());
+    TH1F *azimutal_angle = new TH1F("azimutal_angle", "Azimutal angle distribution", 100, 0, 2 * TMath::Pi());
     histograms.push_back(azimutal_angle);
-    TH1F *impulse = new TH1F("impulse", "Impulse module", 100, 0, 7);
+    TH1F *impulse = new TH1F("impulse", "Impulse module distribution", 100, 0, 7);
     histograms.push_back(impulse);
     TH1F *trasversal_impulse = new TH1F("trasversal_impulse", "Trasversal Impulse", 100, 0, 5);
     histograms.push_back(trasversal_impulse);
@@ -230,4 +230,5 @@ int main()
     {
         delete histo;
     }
+    std::cout << "Generated 10'000'000 of partycles, use analysis.C to see the results" << '\n';
 }
