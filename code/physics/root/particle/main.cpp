@@ -12,7 +12,7 @@
 
 int main()
 {
-    Particle::AddParticleType("Pi+", 0.13957, 1, 0);
+    Particle::AddParticleType("Pi+", 0.13957, +1, 0);
     Particle::AddParticleType("Pi-", 0.13957, -1, 0);
     Particle::AddParticleType("K+", 0.49367, +1, 0);
     Particle::AddParticleType("K-", 0.49367, -1, 0);
@@ -20,30 +20,30 @@ int main()
     Particle::AddParticleType("P-", 0.93827, -1, 0);
     Particle::AddParticleType("K*", 0.89166, 0, 0.050);
 
-    std::vector<TH1F *> histograms;
-    TH1F *particle_type = new TH1F("particle_type", "Types of particles generated", 7, 0, 7);
+    std::vector<TH1D *> histograms;
+    TH1D *particle_type = new TH1D("particle_type", "Types of particles generated", 7, 0, 7);
     histograms.push_back(particle_type);
-    TH1F *polar_angle = new TH1F("polar_angle", "Polar angle distribution", 100, 0, TMath::Pi());
+    TH1D *polar_angle = new TH1D("polar_angle", "Polar angle distribution", 100, 0, TMath::Pi());
     histograms.push_back(polar_angle);
-    TH1F *azimutal_angle = new TH1F("azimutal_angle", "Azimutal angle distribution", 100, 0, 2 * TMath::Pi());
+    TH1D *azimutal_angle = new TH1D("azimutal_angle", "Azimutal angle distribution", 100, 0, 2 * TMath::Pi());
     histograms.push_back(azimutal_angle);
-    TH1F *impulse = new TH1F("impulse", "Impulse module distribution", 100, 0, 7);
+    TH1D *impulse = new TH1D("impulse", "Impulse module distribution", 100, 0, 7);
     histograms.push_back(impulse);
-    TH1F *trasversal_impulse = new TH1F("trasversal_impulse", "Trasversal Impulse", 100, 0, 5);
+    TH1D *trasversal_impulse = new TH1D("trasversal_impulse", "Trasversal Impulse", 100, 0, 5);
     histograms.push_back(trasversal_impulse);
-    TH1F *energy = new TH1F("energy", "Total Energy", 100, 0, 7);
+    TH1D *energy = new TH1D("energy", "Total Energy", 100, 0, 7);
     histograms.push_back(energy);
-    TH1F *tot_inv_mass = new TH1F("tot_inv_mass", "Invariant mass", 100, 0, 2);
+    TH1D *tot_inv_mass = new TH1D("tot_inv_mass", "Invariant mass", 100, 0, 2);
     histograms.push_back(tot_inv_mass);
-    TH1F *disc_inv_mass = new TH1F("disc_inv_mass", "Invariant mass of particles with opposite polarity", 80, 0, 2);
+    TH1D *disc_inv_mass = new TH1D("disc_inv_mass", "Invariant mass of particles with opposite polarity", 80, 0, 2);
     histograms.push_back(disc_inv_mass);
-    TH1F *same_inv_mass = new TH1F("same_inv_mass", "Invariant mass of particles with same polarity", 80, 0, 2);
+    TH1D *same_inv_mass = new TH1D("same_inv_mass", "Invariant mass of particles with same polarity", 80, 0, 2);
     histograms.push_back(same_inv_mass);
-    TH1F *disc_pi_k = new TH1F("disc_pi_k", "Invariant mass of couples Pi, K with opposite polarity", 80, 0, 2);
+    TH1D *disc_pi_k = new TH1D("disc_pi_k", "Invariant mass of couples Pi, K with opposite polarity", 80, 0, 2);
     histograms.push_back(disc_pi_k);
-    TH1F *same_pi_k = new TH1F("same_pi_k", "Invariant mass of couples Pi, K with same polarity", 80, 0, 2);
+    TH1D *same_pi_k = new TH1D("same_pi_k", "Invariant mass of couples Pi, K with same polarity", 80, 0, 2);
     histograms.push_back(same_pi_k);
-    TH1F *decay_inv_mass = new TH1F("decay_inv_mass", "Invariant mass of particles generated after a K* decay", 80, 0, 2);
+    TH1D *decay_inv_mass = new TH1D("decay_inv_mass", "Invariant mass of particles generated after a K* decay", 80, 0, 2);
     histograms.push_back(decay_inv_mass);
 
     gRandom->SetSeed();
@@ -51,6 +51,7 @@ int main()
     Particle event[N];
     for (int i = 0; i != 1E5; i++)
     {
+        int k = 0;
         for (int j = 0; j != 100; j++)
         {
             Particle p;
@@ -66,8 +67,6 @@ int main()
             azimutal_angle->Fill(phi);
             impulse->Fill(P);
             trasversal_impulse->Fill(P_t);
-            energy->Fill(p.GetEnergy());
-            int k = 0;
             double x = gRandom->Uniform(0., 1.);
             if (x < 0.8)
             {
@@ -129,53 +128,59 @@ int main()
                 decay_inv_mass->Fill(dau1.InvMass(dau2));
             }
             particle_type->Fill(p.GetIndexPosition());
+            energy->Fill(p.GetEnergy());
             event[j] = p;
         }
-        for (int j = 1; j != N; j++)
+        for (int j = 0; j != 100 + k; j++)
         {
-            tot_inv_mass->Fill(event[0].InvMass(event[j]));
-            if (event[0].GetIndexPosition() % 2 == 0)
+            for (int l = j + 1; l != 100 + k; l++)
             {
-                if (event[j].GetIndexPosition() % 2 == 0)
+                tot_inv_mass->Fill(event[l].InvMass(event[j]));
+                if (event[l].GetCharge() * event[j].GetCharge() > 0)
                 {
-                    same_inv_mass->Fill(event[0].InvMass(event[j]));
+                    same_inv_mass->Fill(event[l].InvMass(event[j]));
+                    if ((event[l].GetIndexPosition() == 0 && event[j].GetIndexPosition() == 2) ||
+                        (event[j].GetIndexPosition() == 0 && event[l].GetIndexPosition() == 2))
+                    {
+                        same_pi_k->Fill(event[l].InvMass(event[j]));
+                    }
+                    else if ((event[l].GetIndexPosition() == 1 && event[j].GetIndexPosition() == 3) ||
+                             (event[j].GetIndexPosition() == 1 && event[l].GetIndexPosition() == 3))
+                    {
+                        same_pi_k->Fill(event[l].InvMass(event[j]));
+                    }
                 }
-                else
+                else if (event[l].GetCharge() * event[j].GetCharge() < 0)
                 {
-                    disc_inv_mass->Fill(event[0].InvMass(event[j]));
-                }
-            }
-            else if (event[0].GetIndexPosition() % 2 != 0)
-            {
-                if (event[j].GetIndexPosition() % 2 != 0)
-                {
-                    same_inv_mass->Fill(event[0].InvMass(event[j]));
-                }
-                else
-                {
-                    disc_inv_mass->Fill(event[0].InvMass(event[j]));
-                }
-            }
-            for (auto particle : event)
-            {
-                if (particle.GetIndexPosition() == 0 && event[j].GetIndexPosition() == 3)
-                {
-                    disc_pi_k->Fill(particle.InvMass(event[j]));
-                }
-                else if (particle.GetIndexPosition() == 1 && event[j].GetIndexPosition() == 2)
-                {
-                    disc_pi_k->Fill(particle.InvMass(event[j]));
-                }
-                else if (particle.GetIndexPosition() == 0 && event[j].GetIndexPosition() == 2)
-                {
-                    same_pi_k->Fill(particle.InvMass(event[j]));
-                }
-                else if (particle.GetIndexPosition() == 1 && event[j].GetIndexPosition() == 3)
-                {
-                    same_pi_k->Fill(particle.InvMass(event[j]));
+                    disc_inv_mass->Fill(event[l].InvMass(event[j]));
+                    if ((event[l].GetIndexPosition() == 0 && event[j].GetIndexPosition() == 3) ||
+                        (event[j].GetIndexPosition() == 0 && event[l].GetIndexPosition() == 3))
+                    {
+                        disc_pi_k->Fill(event[l].InvMass(event[j]));
+                    }
+                    else if ((event[l].GetIndexPosition() == 1 && event[j].GetIndexPosition() == 2) ||
+                             (event[j].GetIndexPosition() == 1 && event[l].GetIndexPosition() == 2))
+                    {
+                        disc_pi_k->Fill(event[l].InvMass(event[j]));
+                    }
                 }
             }
         }
+        float progress = i / 1E5;
+        int barWidth = 70;
+        std::cout << "[";
+        int pos = barWidth * progress;
+        for (int a = 0; a < barWidth; a++)
+        {
+            if (a < pos)
+                std::cout << "=";
+            else if (a == pos)
+                std::cout << ">";
+            else
+                std::cout << " ";
+        }
+        std::cout << "] " << int(progress * 100.0) << " %\r";
+        std::cout.flush();
     }
 
     std::unique_ptr<TCanvas> c1(new TCanvas("c1", "Particle types, angles and kinetics"));
@@ -230,5 +235,7 @@ int main()
     {
         delete histo;
     }
+    
+    std::cout << std::endl;
     std::cout << "Generated 10'000 events, use analysis.C to see the results" << '\n';
 }
