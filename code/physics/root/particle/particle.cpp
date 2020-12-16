@@ -31,7 +31,6 @@ int Particle::FindParticle(std::string const &name)
     else
     {
         result = MaxNumParticleType_ + 1;
-        //std::cout << "Particle not found" << '\n';
     }
     return result;
 }
