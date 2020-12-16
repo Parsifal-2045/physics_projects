@@ -28,7 +28,7 @@ void analysis()
     const std::string red("\033[0;31m");
     const std::string cyan("\033[0;36m");
     const std::string reset("\033[0m");
-    //std::cout << "\033c";
+    std::cout << "\033c";
     std::cout << red << "Particles generated: " << reset << particle_type->GetEntries() << '\n';
     double value = particle_type->GetBinContent(1) + particle_type->GetBinContent(2);
     double error = particle_type->GetBinError(1) + particle_type->GetBinError(2);
