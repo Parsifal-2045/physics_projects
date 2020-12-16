@@ -48,7 +48,7 @@ void Particle::Boost(double bx, double by, double bz)
     Pz_ += gamma2 * bp * bz + gamma * bz * energy;
 }
 
-Particle::Particle() : IndexParticle_{0}, Px_{0.}, Py_{0.}, Pz_{0.} {}
+Particle::Particle() : IndexParticle_{-1}, Px_{0.}, Py_{0.}, Pz_{0.} {}
 
 Particle::Particle(std::string const &name, double Px = 0, double Py = 0, double Pz = 0)
 {
@@ -74,6 +74,11 @@ int Particle::GetIndexPosition() const
 double Particle::GetMass() const
 {
     return Index_[IndexParticle_]->GetMass();
+}
+
+int Particle::GetCharge() const
+{
+    return Index_[IndexParticle_]->GetCharge();
 }
 
 double Particle::GetPx() const
