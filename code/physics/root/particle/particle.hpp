@@ -26,6 +26,7 @@ public:
     static void Destructor();
     int GetIndexPosition() const;
     double GetMass() const;
+    int GetCharge() const;
     double GetPx() const;
     double GetPy() const;
     double GetPz() const;
