@@ -41,7 +41,7 @@ void Particle::Boost(double bx, double by, double bz)
     double b2 = bx * bx + by * by + bz * bz;
     double gamma = 1.0 / std::sqrt(1.0 - b2);
     double bp = bx * Px_ + by * Py_ + bz * Pz_;
-    double gamma2 = b2 > 0 ? (gamma - 1.0) / 2 : 0.0;
+    double gamma2 = b2 > 0 ? (gamma - 1.0) / b2 : 0.0;
     Px_ += gamma2 * bp * bx + gamma * bx * energy;
     Py_ += gamma2 * bp * by + gamma * by * energy;
     Pz_ += gamma2 * bp * bz + gamma * bz * energy;
