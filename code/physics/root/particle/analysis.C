@@ -90,6 +90,7 @@ void analysis()
     histograms[5] = diff_disc_same_tot;
     diff_disc_same_tot->Sumw2();
     diff_disc_same_tot->Add(disc_inv_mass, same_inv_mass, 1, -1);
+    diff_disc_same_tot->SetEntries(diff_disc_same_tot->Integral());
     diff_disc_same_tot->GetXaxis()->SetTitle("Invariant Mass [GeV]");
     std::cout << red << "Fit stats for total invariant mass: " << reset << '\n';
     diff_disc_same_tot->Fit("gaus");
@@ -103,6 +104,7 @@ void analysis()
     histograms[6] = diff_disc_same_pi_k;
     diff_disc_same_pi_k->Sumw2();
     diff_disc_same_pi_k->Add(disc_pi_k, same_pi_k, 1, -1);
+    diff_disc_same_pi_k->SetEntries(diff_disc_same_pi_k->Integral());
     diff_disc_same_pi_k->GetXaxis()->SetTitle("Invariant Mass [GeV]");
     std::cout << red << "Fit stats for invariant mass of Pions and Kaons: " << reset << '\n';
     diff_disc_same_pi_k->Fit("gaus");
