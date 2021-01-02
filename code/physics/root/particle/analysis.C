@@ -9,10 +9,17 @@
 #include <TMath.h>
 #include <TMinuit.h>
 #include <TPaveStats.h>
-#include <vector>
+#include <TBenchmark.h>
 
 void analysis()
 {
+    char benchmark;
+    std::cout << "Do you want to benchmark the generation code? (y/n)" << '\n';
+    std::cin >> benchmark;
+    if (benchmark == 'y')
+    {
+        gBenchmark->Start("Analysis Benchmark");
+    }
     TFile *file = new TFile("histograms.root", "READ");
     TH1D *histograms[7];
     TH1D *particle_type = (TH1D *)file->Get("particle_type");
@@ -172,4 +179,8 @@ void analysis()
     c1->Print("types_impulse_angles.pdf");
     c2->Print("invariant_mass.pdf");
     result->Close();
+    if (benchmark == 'y')
+    {
+        gBenchmark->Show("Analysis Benchmark");
+    }
 }

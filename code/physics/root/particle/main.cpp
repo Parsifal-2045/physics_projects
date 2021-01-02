@@ -6,12 +6,21 @@
 #include <TH1.h>
 #include <TCanvas.h>
 #include <TFile.h>
+#include <TBenchmark.h>
 #include "particle_type.hpp"
 #include "resonance_type.hpp"
 #include "particle.hpp"
 
 int main()
 {
+    char benchmark;
+    std::cout << "Do you want to benchmark the generation code? (y/n)" << '\n';
+    std::cin >> benchmark;
+    if (benchmark == 'y')
+    {
+        gBenchmark = new TBenchmark();
+        gBenchmark->Start("Complete benchmark");
+    }
     Particle::AddParticleType("Pi+", 0.13957, +1, 0);
     Particle::AddParticleType("Pi-", 0.13957, -1, 0);
     Particle::AddParticleType("K+", 0.49367, +1, 0);
@@ -235,7 +244,11 @@ int main()
     {
         delete histo;
     }
-    
+
     std::cout << std::endl;
     std::cout << "Generated 10'000 events, use analysis.C to see the results" << '\n';
+    if (benchmark == 'y')
+    {
+        gBenchmark->Show("Complete benchmark");
+    }
 }
