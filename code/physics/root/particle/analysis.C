@@ -14,7 +14,7 @@
 void analysis()
 {
     char benchmark;
-    std::cout << "Do you want to benchmark the generation code? (y/n)" << '\n';
+    std::cout << "Do you want to benchmark the analysis code? (y/n)" << '\n';
     std::cin >> benchmark;
     if (benchmark == 'y')
     {
