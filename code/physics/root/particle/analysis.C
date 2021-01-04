@@ -1,5 +1,6 @@
 #include <iostream>
 #include <string>
+#include <vector>
 #include <TROOT.h>
 #include <TStyle.h>
 #include <TFile.h>
@@ -10,6 +11,19 @@
 #include <TMinuit.h>
 #include <TPaveStats.h>
 #include <TBenchmark.h>
+
+struct VEP
+{
+    double v_ = 0;
+    double e_ = 0;
+    double p_ = 0;
+    VEP(double const value, double const error, double const percentage)
+    {
+        v_ = value;
+        e_ = error;
+        p_ = percentage;
+    }
+};
 
 void analysis()
 {
@@ -32,27 +46,29 @@ void analysis()
     particle_type->GetXaxis()->SetBinLabel(5, "P+");
     particle_type->GetXaxis()->SetBinLabel(6, "P-");
     particle_type->GetXaxis()->SetBinLabel(7, "K*");
+    double value;
+    double error;
+    double percentage;
+    std::vector<VEP> data;
+    for (int i = 1; i != 8; i++)
+    {
+        value = particle_type->GetBinContent(i);
+        error = particle_type->GetBinError(i);
+        percentage = 100 * value / particle_type->GetEntries();
+        data.push_back(VEP(value, error, percentage));
+    }
     const std::string red("\033[0;31m");
     const std::string cyan("\033[0;36m");
     const std::string reset("\033[0m");
     std::cout << "\033c";
     std::cout << red << "Particles generated: " << reset << particle_type->GetEntries() << '\n';
-    double value = particle_type->GetBinContent(1) + particle_type->GetBinContent(2);
-    double error = particle_type->GetBinError(1) + particle_type->GetBinError(2);
-    double percentage = 100 * value / particle_type->GetEntries();
-    std::cout << "Pions: " << value << " +/- " << error << " ~ " << percentage << "% of total" << '\n';
-    value = particle_type->GetBinContent(3) + particle_type->GetBinContent(4);
-    error = particle_type->GetBinError(3) + particle_type->GetBinError(4);
-    percentage = 100 * value / particle_type->GetEntries();
-    std::cout << "Kaons: " << value << " +/- " << error << " ~ " << percentage << "% of total" << '\n';
-    value = particle_type->GetBinContent(5) + particle_type->GetBinContent(6);
-    error = particle_type->GetBinError(5) + particle_type->GetBinError(6);
-    percentage = 100 * value / particle_type->GetEntries();
-    std::cout << "Protons: " << value << " +/- " << error << " ~ " << percentage << "% of total" << '\n';
-    value = particle_type->GetBinContent(7);
-    error = particle_type->GetBinError(7);
-    percentage = 100 * value / particle_type->GetEntries();
-    std::cout << "K* (resonance): " << value << " +/- " << error << " ~ " << percentage << "% of total" << '\n';
+    std::cout << "Pions (+): " << data[0].v_ << " +/- " << data[0].e_ << " ~ " << data[0].p_ << "% of total\n";
+    std::cout << "Pions (-): " << data[1].v_ << " +/- " << data[1].e_ << " ~ " << data[1].p_ << "% of total\n";
+    std::cout << "Kaons (+): " << data[2].v_ << " +/- " << data[2].e_ << " ~ " << data[2].p_ << "% of total\n";
+    std::cout << "Kaons (-): " << data[3].v_ << " +/- " << data[3].e_ << " ~ " << data[3].p_ << "% of total\n";
+    std::cout << "Protons (+): " << data[4].v_ << " +/- " << data[4].e_ << " ~ " << data[4].p_ << "% of total\n";
+    std::cout << "Protons (-): " << data[5].v_ << " +/- " << data[5].e_ << " ~ " << data[5].p_ << "% of total\n";
+    std::cout << "K* (resonance): " << data[6].v_ << " +/- " << data[6].e_ << " ~ " << data[6].p_ << "% of total\n";
 
     TH1D *polar_angle = (TH1D *)file->Get("polar_angle");
     histograms[1] = polar_angle;
