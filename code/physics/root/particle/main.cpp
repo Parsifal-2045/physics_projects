@@ -246,7 +246,7 @@ int main()
     }
 
     std::cout << std::endl;
-    std::cout << "Generated 10'000 events, use analysis.C to see the results" << '\n';
+    std::cout << "Generated 100'000 events, use analysis.C to see the results" << '\n';
     if (benchmark == 'y')
     {
         gBenchmark->Show("Complete benchmark");
