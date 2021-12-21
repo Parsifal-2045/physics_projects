@@ -66,8 +66,8 @@ void analysis()
 
     TLegend *leg = new TLegend(0.0988539, 0.803797, 0.442693, 0.951477, "Risposta BJT in funzione della corrente di base");
     leg->SetFillColor(0);
-    leg->AddEntry(min, "Corrente di base |Ib| = 100 #muA");
-    leg->AddEntry(mag, "Corrente di base |Ib| = 200 #muA");
+    leg->AddEntry(min, "Corrente di base Ib = -100 #muA");
+    leg->AddEntry(mag, "Corrente di base Ib = -200 #muA");
     leg->SetTextSize(0.022);
     leg->Draw("SAME");
 
