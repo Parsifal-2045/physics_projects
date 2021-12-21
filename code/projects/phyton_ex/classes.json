@@ -1,0 +1,14 @@
+{
+    "big" : {
+        "beta" : "1",
+        "descr" : "the big ones"
+    },
+    "mid" : {
+        "beta" : "0.5",
+        "descr" : "the mid ones"
+    },
+    "small" : {
+        "beta" : "0.1",
+        "descr" : "the small ones"
+    }
+}
