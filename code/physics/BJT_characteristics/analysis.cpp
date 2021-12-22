@@ -28,6 +28,8 @@ void analysis()
     TF1 *fitfunc = new TF1("fitfunc", "[0] + [1]*x", 1, 4);
     fitfunc->SetParameter(0, 15);
     fitfunc->SetParameter(1, 1);
+    fitfunc->SetParName(0, "a");
+    fitfunc->SetParName(1, "b");
     fitfunc->SetLineColor(kBlack);
     fitfunc->SetLineWidth(2);
     min->Fit("fitfunc", "R");
@@ -39,6 +41,8 @@ void analysis()
     TF1 *fitfunc2 = new TF1("fitfunc2", "[0] + [1]*x", 1, 4);
     fitfunc2->SetParameter(0, 30);
     fitfunc2->SetParameter(1, 1);
+    fitfunc2->SetParName(0, "a");
+    fitfunc2->SetParName(1, "b");
     fitfunc2->SetLineColor(kBlack);
     fitfunc2->SetLineWidth(2);
     mag->Fit("fitfunc2", "R");
