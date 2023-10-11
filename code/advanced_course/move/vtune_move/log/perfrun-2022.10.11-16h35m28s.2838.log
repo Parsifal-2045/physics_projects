@@ -1,0 +1,107 @@
+25 [140059587080320] INFO perfrun.launcher <> - Launcher main begin
+26 [140059587080320] INFO perfrun.launcher <> - MessageCatalogInit finished
+26 [140059587080320] INFO perfrun.launcher <> - Launcher instance created
+26 [140059587080320] INFO perfrun.launcher <> - argc = 7; cmdline = /opt/intel/oneapi/vtune/2022.2.0/bin64/amplxe-runss --ui-output-format xml --ui-output-fd 5 --option-file /home/luca/Physics-Projects/code/cpluspluscourse/code/move/r000hs/config/runss.options 
+107 [140059587080320] INFO perfrun.launcher <> - create msngr2::ICliToolContext
+108 [140059587080320] INFO perfrun.launcher <> - create file finder object
+108 [140059587080320] INFO perfrun.launcher <> - create a result directory: pattern = /home/luca/Physics-Projects/code/cpluspluscourse/code/move/r000hs pid = 4294967295
+109 [140059587080320] INFO perfrun.sdk <> - checked that the directory /home/luca/Physics-Projects/code/cpluspluscourse/code/move/r000hs is a local directory
+109 [140059587080320] INFO perfrun.sdk <> - the directory /home/luca/Physics-Projects/code/cpluspluscourse/code/move/r000hs is a local directory with FS type ID 61267
+109 [140059587080320] INFO perfrun.launcher <> - create data directory = /home/luca/Physics-Projects/code/cpluspluscourse/code/move/r000hs/data.0
+109 [140059587080320] INFO perfrun.launcher <> - Creating the master collection flag
+114 [140059587080320] INFO perfrun.launcher <> - Done creating the master collection flag
+114 [140059577554688] INFO perfrun.launcher <> - plugin [remoteplug] was disabled because it doesn't support the given collection type.
+114 [140059577554688] INFO perfrun.sdk <> - Allocating TMU :/home/luca/Physics-Projects/code/cpluspluscourse/code/move/r000hs/data.0/systemcollector-2838-Surface-Pro-8.sc
+115 [140059577554688] INFO perfrun.system <> - Tpss based collection
+115 [140059577554688] INFO perfrun.launcher <> - plugin [ptracecollector] was disabled because it doesn't support the given collection type.
+115 [140059577554688] INFO perfrun.launcher <> - plugin [gpu] was disabled because it doesn't support the given collection type.
+115 [140059577554688] INFO perfrun.launcher <> - plugin [] was disabled because it doesn't support the given collection type.
+115 [140059577554688] INFO perfrun.launcher <> - plugin [] was disabled because it doesn't support the given collection type.
+115 [140059577554688] INFO perfrun.launcher <> - plugin [] was disabled because it doesn't support the given collection type.
+115 [140059577554688] INFO perfrun.mrte <> - system-wide mode is 0
+115 [140059577554688] INFO perfrun.mrte <> - Getting  mrte profiling environment ...
+139 [140059577554688] INFO perfrun.mrte <> - INTEL_MRTE_DATA_DIR=/home/luca/Physics-Projects/code/cpluspluscourse/code/move/r000hs/data.0
+139 [140059577554688] INFO perfrun.mrte <> - INTEL_MRTE_HOST_NAME=Surface-Pro-8
+139 [140059577554688] INFO perfrun.mrte <> - JAVA_TOOL_OPTIONS=-agentlib:amplxe_tpssmrte_javaprof_1.0 -Dsun.boot.library.path=/opt/intel/oneapi/vtune/2022.2.0/lib32/runtime:/opt/intel/oneapi/vtune/2022.2.0/lib64/runtime
+139 [140059577554688] INFO perfrun.mrte <> - LD_LIBRARY_PATH=/opt/intel/oneapi/vtune/2022.2.0/lib32/runtime:/opt/intel/oneapi/vtune/2022.2.0/lib64/runtime:/home/luca/root/lib:/opt/intel/oneapi/tbb/2021.6.0/env/../lib/intel64/gcc4.8:/opt/intel/oneapi/debugger/2021.6.0/gdb/intel64/lib:/opt/intel/oneapi/debugger/2021.6.0/libipt/intel64/lib:/opt/intel/oneapi/debugger/2021.6.0/dep/lib:/opt/intel/oneapi/compiler/2022.1.0/linux/lib:/opt/intel/oneapi/compiler/2022.1.0/linux/lib/x64:/opt/intel/oneapi/compiler/2022.1.0/linux/lib/oclfpga/host/linux64/lib:/opt/intel/oneapi/compiler/2022.1.0/linux/compiler/lib/intel64_lin
+139 [140059577554688] INFO perfrun.mrte <> - CORECLR_ENABLE_PROFILING=1
+139 [140059577554688] INFO perfrun.mrte <> - CORECLR_PROFILER={AA5E4821-E3B1-479c-B7FF-5AD047D22CED}
+139 [140059577554688] INFO perfrun.mrte <> - CORECLR_PROFILER_PATH=/opt/intel/oneapi/vtune/2022.2.0/lib64/libamplxe_samplingmrte_clrprof_1.0.so
+139 [140059577554688] INFO perfrun.mrte <> - INTEL_MRTE_PROFILER_MODE=mixed
+139 [140059577554688] INFO perfrun.mrte <> - Data directory: /home/luca/Physics-Projects/code/cpluspluscourse/code/move/r000hs/data.0
+139 [140059577554688] INFO perfrun.mrte <> - Mrte plugin is initialized
+139 [140059577554688] INFO perfrun.launcher <> - plugin [emon] was disabled because it doesn't support the given collection type.
+139 [140059577554688] INFO perfrun.launcher <> - plugin [cuscol] was disabled because it doesn't support the given collection type.
+139 [140059577554688] INFO perfrun.launcher <> - plugin [stdsrc] was disabled because it doesn't support the given collection type.
+140 [140059577554688] INFO perfrun.launcher <> - plugin [sep] was disabled because it doesn't support the given collection type.
+140 [140059577554688] INFO perfrun.launcher <> - plugin [vtsspp] was disabled because it doesn't support the given collection type.
+140 [140059577554688] INFO perfrun.launcher <> - plugin [perf] was disabled because it doesn't support the given collection type.
+140 [140059577554688] INFO perfrun.launcher <> - plugin [aoclprofile] was disabled because it doesn't support the given collection type.
+140 [140059577554688] INFO perfrun.tpss <> - initialize tpss controller
+140 [140059577554688] INFO perfrun.tpss <> - configure collection mode: value = cpu:counters:nostack
+140 [140059577554688] INFO perfrun.tpss <> - configure collection mode: value = cpu:stack
+140 [140059577554688] INFO perfrun.tpss <> - default obj-size-min=1024
+140 [140059577554688] INFO perfrun.tpss <> - default hash-table-size=0
+140 [140059577554688] INFO perfrun.launcher <> - plugin [media] was disabled because it doesn't support the given collection type.
+140 [140059577554688] INFO perfrun.launcher <> - plugin [] was disabled because it doesn't support the given collection type.
+140 [140059577554688] INFO perfrun.launcher <> - plugin [] was disabled because it doesn't support the given collection type.
+140 [140059577554688] INFO perfrun.launcher <> - plugin [parallelfs] was disabled because it doesn't support the given collection type.
+140 [140059577554688] INFO perfrun.launcher <> - plugin [power] was disabled because it doesn't support the given collection type.
+140 [140059577554688] INFO perfrun.launcher <> - plugin [hwloc] was disabled because it doesn't support the given collection type.
+140 [140059577554688] INFO perfrun.launcher <> - plugin [ipmwatch] was disabled because it doesn't support the given collection type.
+140 [140059577554688] INFO perfrun.launcher <> - plugin [os_counters] was disabled because it doesn't support the given collection type.
+140 [140059577554688] INFO perfrun.launcher <> - plugin [l0_metrics] was disabled because it doesn't support the given collection type.
+141 [140059587080320] INFO perfrun.launcher <> - set environment variable: LD_LIBRARY_PATH = /opt/intel/oneapi/vtune/2022.2.0/lib32/runtime:/opt/intel/oneapi/vtune/2022.2.0/lib64/runtime:/home/luca/root/lib:/opt/intel/oneapi/tbb/2021.6.0/env/../lib/intel64/gcc4.8:/opt/intel/oneapi/debugger/2021.6.0/gdb/intel64/lib:/opt/intel/oneapi/debugger/2021.6.0/libipt/intel64/lib:/opt/intel/oneapi/debugger/2021.6.0/dep/lib:/opt/intel/oneapi/compiler/2022.1.0/linux/lib:/opt/intel/oneapi/compiler/2022.1.0/linux/lib/x64:/opt/intel/oneapi/compiler/2022.1.0/linux/lib/oclfpga/host/linux64/lib:/opt/intel/oneapi/compiler/2022.1.0/linux/compiler/lib/intel64_lin
+141 [140059587080320] INFO perfrun.launcher <> - set environment variable: INTEL_LIBITTNOTIFY32 = /opt/intel/oneapi/vtune/2022.2.0/lib32/runtime/libittnotify_collector.so
+141 [140059587080320] INFO perfrun.launcher <> - set environment variable: INTEL_LIBITTNOTIFY64 = /opt/intel/oneapi/vtune/2022.2.0/lib64/runtime/libittnotify_collector.so
+142 [140059587080320] INFO perfrun.launcher <> - set environment variable: INTEL_ITTNOTIFY_GROUPS = 
+142 [140059587080320] INFO perfrun.launcher <> - set environment variable: INTEL_JIT_PROFILER32 = /opt/intel/oneapi/vtune/2022.2.0/lib32/runtime/libittnotify_collector.so
+142 [140059587080320] INFO perfrun.launcher <> - set environment variable: INTEL_JIT_PROFILER64 = /opt/intel/oneapi/vtune/2022.2.0/lib64/runtime/libittnotify_collector.so
+143 [140059587080320] INFO perfrun.launcher <> - set environment variable: VS_PROFILER = libittnotify_collector.so
+143 [140059587080320] INFO perfrun.launcher <> - set environment variable: OMP_TOOL_LIBRARIES = /opt/intel/oneapi/vtune/2022.2.0/lib32/runtime/libittnotify_collector.so:/opt/intel/oneapi/vtune/2022.2.0/lib64/runtime/libittnotify_collector.so
+143 [140059587080320] INFO perfrun.launcher <> - set environment variable: ENABLE_JITPROFILING = 1
+144 [140059587080320] INFO perfrun.launcher <> - set environment variable: CL_CONFIG_USE_VTUNE = True
+144 [140059587080320] INFO perfrun.launcher <> - set environment variable: KMP_FORKJOIN_FRAMES = 0
+144 [140059587080320] INFO perfrun.launcher <> - set environment variable: KMP_FORKJOIN_FRAMES_MODE = 0
+144 [140059587080320] INFO perfrun.launcher <> - set environment variable: OMP_TOOL = disabled
+145 [140059587080320] INFO perfrun.launcher <> - set environment variable: INTEL_MRTE_DATA_DIR = /home/luca/Physics-Projects/code/cpluspluscourse/code/move/r000hs/data.0
+145 [140059587080320] INFO perfrun.launcher <> - set environment variable: INTEL_MRTE_HOST_NAME = Surface-Pro-8
+145 [140059587080320] INFO perfrun.launcher <> - set environment variable: JAVA_TOOL_OPTIONS = -agentlib:amplxe_tpssmrte_javaprof_1.0 -Dsun.boot.library.path=/opt/intel/oneapi/vtune/2022.2.0/lib32/runtime:/opt/intel/oneapi/vtune/2022.2.0/lib64/runtime
+145 [140059587080320] INFO perfrun.launcher <> - set environment variable: LD_LIBRARY_PATH = /opt/intel/oneapi/vtune/2022.2.0/lib32/runtime:/opt/intel/oneapi/vtune/2022.2.0/lib64/runtime:/home/luca/root/lib:/opt/intel/oneapi/tbb/2021.6.0/env/../lib/intel64/gcc4.8:/opt/intel/oneapi/debugger/2021.6.0/gdb/intel64/lib:/opt/intel/oneapi/debugger/2021.6.0/libipt/intel64/lib:/opt/intel/oneapi/debugger/2021.6.0/dep/lib:/opt/intel/oneapi/compiler/2022.1.0/linux/lib:/opt/intel/oneapi/compiler/2022.1.0/linux/lib/x64:/opt/intel/oneapi/compiler/2022.1.0/linux/lib/oclfpga/host/linux64/lib:/opt/intel/oneapi/compiler/2022.1.0/linux/compiler/lib/intel64_lin
+146 [140059587080320] INFO perfrun.launcher <> - set environment variable: CORECLR_ENABLE_PROFILING = 1
+146 [140059587080320] INFO perfrun.launcher <> - set environment variable: CORECLR_PROFILER = {AA5E4821-E3B1-479c-B7FF-5AD047D22CED}
+146 [140059587080320] INFO perfrun.launcher <> - set environment variable: CORECLR_PROFILER_PATH = /opt/intel/oneapi/vtune/2022.2.0/lib64/libamplxe_samplingmrte_clrprof_1.0.so
+147 [140059587080320] INFO perfrun.launcher <> - set environment variable: INTEL_MRTE_PROFILER_MODE = mixed
+147 [140059587080320] INFO perfrun.launcher <> - RpcServer: run RPC server to handle requests
+148 [140059587080320] INFO perfrun.launcher <> - Launcher: command line to start before modification = ./trymove
+149 [140059587080320] INFO perfrun.launcher <> - Launcher: command line to start after modification = /opt/intel/oneapi/vtune/2022.2.0/bin64/pin -error_file /home/luca/Physics-Projects/code/cpluspluscourse/code/move/r000hs/data.0/pinerr.tpsslog -detach_reattach -follow_execv -tool_load_option deepbind -t64 /opt/intel/oneapi/vtune/2022.2.0/lib64/libtpsstool.so -t /opt/intel/oneapi/vtune/2022.2.0/lib32/libtpsstool.so -server_name tpss_ipc.2838 -prd_dir /opt/intel/oneapi/vtune/2022.2.0 -- ./trymove
+149 [140059587080320] INFO perfrun.launcher <> - ProcessCreator object was created
+150 [140059587080320] INFO perfrun.launcher <> - Launcher: the process was started in suspend mode
+152 [140059577554688] WARN perfrun.system <> - Folder "/sys/kernel/debug/kvm"doesn't exist, at file: vcs/perfrun1/plugins/system/src/trace_writer.cpp:720
+152 [140059577554688] WARN perfrun.system <> - Folder "/var/run/libvirt/qemu/"doesn't exist, at file: vcs/perfrun1/plugins/system/src/trace_writer.cpp:800
+152 [140059577554688] WARN perfrun.sdk <> - Failed to find xl binary on any of the system paths: /bin, /sbin, /usr/bin, /usr/sbin., at file: vcs/perfrun1/sdk/src/utils.cpp:204
+153 [140059577554688] WARN perfrun.system <> - Could not start ContainerMapping collector, at file: vcs/perfrun1/plugins/system/src/controller.cpp:448
+160 [140059577554688] INFO perfrun.vdso <> - Helper runtool '/opt/intel/oneapi/vtune/2022.2.0/bin32/amplxe-runss -dump-vdso -r /home/luca/Physics-Projects/code/cpluspluscourse/code/move/r000hs --tmp-dir /tmp/amplxe-tmp-luca' returned 1
+237 [140059577554688] INFO perfrun.vdso <> - Helper runtool '/opt/intel/oneapi/vtune/2022.2.0/bin64/amplxe-runss -dump-vdso -r /home/luca/Physics-Projects/code/cpluspluscourse/code/move/r000hs --tmp-dir /tmp/amplxe-tmp-luca' returned 0
+237 [140059577554688] INFO perfrun.itt <> - start itt controller for pid #2843
+237 [140059577554688] INFO perfrun.tpss <> - start tpss controller for pid #2843
+288 [140059587080320] INFO perfrun.launcher <> - Launcher: all plugins were started
+288 [140059587080320] INFO perfrun.launcher <> - DirectoryMonitor object was created
+288 [140059587080320] INFO perfrun.launcher <> - DirectoryMonitor: a callback was added
+288 [140059587080320] INFO perfrun.launcher <> - DirectoryMonitor was started with pingTime = 1000
+288 [140059587080320] INFO perfrun.launcher <> - DeadlineTimer is going to be constructed
+289 [140059587080320] INFO perfrun.launcher <> - DeadlineTimer: a callback was added
+294 [140059587080320] INFO perfrun.launcher <> - Launcher: resume the profiled application and  wait its termination or stop command
+762 [140059587080320] INFO perfrun.launcher <> - Launcher: the profiled application was terminated  with exit code = 134
+765 [140059577554688] INFO perfrun.itt <> - detach itt controller
+765 [140059577554688] INFO perfrun.itt <> - detach itt controller done
+765 [140059577554688] INFO perfrun.tpss <> - stop tpss controller
+766 [140059577554688] INFO perfrun.sdk <> - De-allocating TMU: /home/luca/Physics-Projects/code/cpluspluscourse/code/move/r000hs/data.0/systemcollector-2838-Surface-Pro-8.sc
+766 [140059577554688] INFO perfrun.system <> - closed the system trace file: /home/luca/Physics-Projects/code/cpluspluscourse/code/move/r000hs/data.0/systemcollector-2838-Surface-Pro-8.sc
+767 [140059587080320] INFO perfrun.launcher <> - Launcher: all plugins were stopped.
+767 [140059587080320] INFO perfrun.launcher <> - DeadlineTimer is going to be destroyed
+767 [140059587080320] INFO perfrun.launcher <> - DeadlineTimer was destroyed
+767 [140059587080320] INFO perfrun.launcher <> - DirectoryMonitor object was destroyed
+767 [140059587080320] WARN perfrun.launcher <> - Stop command is ignored because it is received when collection is already stopped, at file: vcs/perfrun1/launcher/src/command_handler.cpp:226
+767 [140059587080320] INFO perfrun.launcher <> - Application exit code: 134
+768 [140059587080320] INFO perfrun.launcher <> - Exit code: 4
