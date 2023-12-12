@@ -23,7 +23,7 @@ void generate(int nTrk = 10)
   TH1F *hNHits = new TH1F("hNHits", "Number of hits, generated track ", 20, -0.5, 19.5);
   TH2F *hHits = new TH2F("hHits", " Hits map ", 1500, 0, 150, 2000, -100, 100);
   TH1F *hBDen = new TH1F("hBDen", " B parameter, all gen tracks", 100, -1., 1.);
-  TH1F *hBNum = new TH1F("hBNum", " B parameter, tracks having 8 hits", 100, -1., 1.);
+  TH1F *hBNum = new TH1F("hBNum", " B parameter, tracks having 8 hits", 100, -1., 1.); // 80% acceptance
   hBNum->Sumw2();
   hBDen->Sumw2();
 
@@ -39,14 +39,13 @@ void generate(int nTrk = 10)
   Double_t xPlanes[nPlanes];          // planes x position
   for (Int_t i = 0; i < nPlanes; i++)
   {
-    xPlanes[i] = 20. + i * 10; // in cm
+    xPlanes[i] = 20. + i * 10; // x position in cm (convert detector layer to distance)
   }
 
   Double_t A = 0, B = 0;
   Double_t xImpact, yImpact;
 
   // start loop over events
-
   for (Int_t ievt = 0; ievt < nEvt; ievt++)
   {
     Int_t nHits = 0;                                        // total hits per event
@@ -57,41 +56,49 @@ void generate(int nTrk = 10)
     {
       nHitsP[i] = 0;
     }
-
     //_____________________________________________
     // The true track and detector hits generation
     //_____________________________________________
-
     for (Int_t iTrk = 0; iTrk < nTrk; iTrk++)
     {
+      // generate the track
+      A = gRandom->Uniform(-2, 2);
+      B = gRandom->Uniform(-0.3, 0.3); // about 17 degrees
+      // B = gRandom->Uniform(-50. / 110., 50. / 110.); // exact detector's acceptance (about 25 degrees)
+      // B = gRandom->Uniform(-1., 1.); // 45 degrees
 
-      //_____________________________________________
-      //
-      // Add code Here
-      //_____________________________________________
-      //
+      genTrack[iTrk].SetA(A);
+      genTrack[iTrk].SetB(B);
 
-      // now loop on the planes  to count how many hits in the det
-
+      // loop on the planes  to count how many hits in the det
       for (Int_t i = 0; i < nPlanes; i++)
       {
-
-        //_____________________________________________
-        //
-        // Add code Here
-        //_____________________________________________
-        //
-
-        //
+        xImpact = xPlanes[i];
+        yImpact = A + B * xImpact;
+        if (TMath::Abs(yImpact) < HalfPlaneWidth)
+        {
+          genTrack[iTrk].AddHit();                                           // increment # hits in genTrack
+          Hits[i][nHitsP[i]].Set(xImpact, yImpact, iTrk);                    // set x,y,gen track label in current hit
+          hHits->Fill(Hits[i][nHitsP[i]].GetX(), Hits[i][nHitsP[i]].GetY()); // hit map
+          nHits++;
+          nHitsP[i]++;
+        }
       } // close loop on detector layers
 
+      hNHits->Fill(genTrack[iTrk].GetNHits()); // fill # hits for current track
+
+      // monitor fraction of reference tracks as a function of B (acceptance)
+      if (genTrack[iTrk].GetNHits() >= 8)
+      {
+        hBNum->Fill(B);
+      }
+      hBDen->Fill(B);
     } // close loop on generated tracks
-      //_________________________________________________
-  }   // end loop over the events
+  } // end loop over the events
 
   TH1F *hAcc = new TH1F(*hBDen);
   hAcc->SetTitle("Acceptance vs B, at least 8 hits");
-  hAcc->Divide(hBNum, hBDen, 1, 1, "B");
+  hAcc->Divide(hBNum, hBDen, 1, 1, "B"); // acceptance = # tracks with at least 8 hits / total # of generated tracks
 
   TCanvas *cPlot1 = new TCanvas();
   cPlot1->Divide(2, 2);
