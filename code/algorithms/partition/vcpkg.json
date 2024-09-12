@@ -1,0 +1,6 @@
+{
+    "name" : "partition",
+    "dependencies" : [
+        "fmt"
+    ]
+}
