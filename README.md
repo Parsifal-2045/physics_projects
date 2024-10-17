@@ -1,5 +1,5 @@
 # Physics Projects
-A collection of code and useful snippets mostly developed throughout my bachelor's degree at the University of Bologna.
+General collection of useful C++ code
 
 ## Structure
 
