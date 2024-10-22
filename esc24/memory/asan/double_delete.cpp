@@ -1,9 +1,9 @@
 int *factory();
 
-int main() {
+int main()
+{
   auto t = factory();
 
-  delete t;
   delete t;
 }
 
