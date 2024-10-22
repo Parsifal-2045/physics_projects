@@ -1,4 +1,3 @@
-// std=c++20
 #include <vector>
 #include <list>
 #include <set>
