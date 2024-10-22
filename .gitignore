@@ -1,5 +1,15 @@
+# env
 .vscode/
+# output
 *.out
 *.dat
 *.pdf
 *.root
+*.gif
+/esc24/cuda/circle_of_life/*.txt
+/esc24/cuda/circle_of_life/*circle_of_life
+
+# cmake
+/esc24/pybind/build
+# external deps
+/esc24/pybind/pybind11
