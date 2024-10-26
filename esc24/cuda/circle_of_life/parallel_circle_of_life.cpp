@@ -340,23 +340,21 @@ void print_grid(const Grid &grid)
   std::osyncstream out{std::cout};
   // Clear the screen
   out << "\033[2J\033[1;1H";
-
-  tbb::parallel_for<int>(0, grid.size(), 1, [&](int i)
-                         { tbb::parallel_for<int>(0, grid[i].size(), 1, [&](int j)
-                                                  { auto &cell = grid[i][j]; 
-                                                        if (cell.state == CellState::Predator)
-      {
-        out << "\033[38;2;0;0;" << +cell.level << "mO\033[0m"; // Blue with intensity
-      }
+  for (const auto &row : grid)
+  {
+    for (const auto &cell : row)
+    {
+      if (cell.state == CellState::Predator)
+        out << "\033[38;2;0;0;" << +cell.level
+            << "mO\033[0m"; // Blue with intensity
       else if (cell.state == CellState::Prey)
-      {
-        out << "\033[38;2;" << +cell.level << ";0;0mO\033[0m"; // Red with intensity
-      }
+        out << "\033[38;2;" << +cell.level
+            << ";0;0mO\033[0m"; // Red with intensity
       else
-      {
         out << ' ';
-      } });
-          out << '\n'; });
+    }
+    out << '\n';
+  }
 }
 
 void save_grid_to_file(const Grid &grid, const std::string &filename)
@@ -405,18 +403,28 @@ bool compare_grids(const Grid &grid1, const Grid &grid2)
 {
   size_t height = grid1.size();
   size_t width = grid1[0].size();
+  bool mismatch = false;
 
-  tbb::parallel_for(tbb::blocked_range2d<size_t, size_t>(0, height, 1, 0, width, 1), [&](const auto &range2d)
-                    {
+  tbb::task_group tg;
+  tbb::task_group_status status = tg.run_and_wait([&]
+                                                  { tbb::parallel_for(tbb::blocked_range2d<size_t, size_t>(0, height, 1, 0, width, 1), [&](const auto &range2d)
+                                                                      {
     for (auto y = range2d.rows().begin(); y != range2d.rows().end(); ++y){
       for(auto x = range2d.cols().begin(); x != range2d.cols().end(); ++x){
       if (grid1[y][x].state != grid2[y][x].state)
-        return false;
-      if (grid1[y][x].level != grid2[y][x].level)
-        return false;
+      {
+        mismatch = true;
+        tg.cancel();
       }
-    } });
-  return true;
+      if (grid1[y][x].level != grid2[y][x].level)
+      {
+        mismatch = true;
+        tg.cancel();
+      }
+      }
+    } }); });
+
+  return !mismatch;
 }
 
 int main(int argc, char *argv[])
@@ -591,6 +599,7 @@ int main(int argc, char *argv[])
   else
   {
     // Save the final grid to a reference file
+    print_grid(grid);
     save_grid_to_file(grid, reference_filename);
     std::cout << "Reference grid saved to " << reference_filename << '\n';
   }
