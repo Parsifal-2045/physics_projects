@@ -96,7 +96,7 @@ struct NeighborData
   int n_preys = 0;
 };
 
-NeighborData gather_neighbor_data(const int width, const int height, const Cell *grid, int x, int y)
+__device__ NeighborData gather_neighbor_data(const int width, const int height, const Cell *grid, int x, int y)
 {
   NeighborData data;
 
@@ -140,38 +140,7 @@ __global__ void update_grid_cuda(const size_t width, const size_t height, Cell *
   if (index < width * height)
   {
     Cell &current_cell = d_grid[index];
-    NeighborData neighbors;
-    for (int dy = -1; dy <= 1; ++dy)
-    {
-      for (int dx = -1; dx <= 1; ++dx)
-      {
-        if (dx == 0 && dy == 0)
-          continue;
-        auto localIndex = threadIdx.x + dx + ((blockDim.x + dy) * height);
-        int nx = (threadIdx.x + dx + width) % width;
-        int ny = (blockDim.x + dy + height) % height;
-        auto neighborIndex = nx + ny * height;
-        const Cell &neighbor = d_grid[neighborIndex];
-        if (neighbor.state == CellState::Predator)
-        {
-          neighbors.predator_levels[localIndex] = neighbor.level;
-          neighbors.n_predators++;
-          neighbors.max_predator_level = neighbors.max_predator_level > neighbor.level ? neighbors.max_predator_level : neighbor.level;
-          neighbors.sum_predator_levels += neighbor.level;
-        }
-        else if (neighbor.state == CellState::Prey)
-        {
-          neighbors.prey_levels[localIndex] = neighbor.level;
-          neighbors.n_preys++;
-          neighbors.max_prey_level = neighbors.max_prey_level > neighbor.level ? neighbors.max_prey_level : neighbor.level;
-          neighbors.sum_prey_levels += neighbor.level;
-        }
-        else if (neighbor.state == CellState::Empty)
-        {
-          neighbors.empty_neighbors++;
-        }
-      }
-    }
+    NeighborData neighbors = gather_neighbor_data(width, height, d_grid, index % width, index / width);
 
     if (current_cell.state == CellState::Empty)
     {
@@ -197,8 +166,7 @@ __global__ void update_grid_cuda(const size_t width, const size_t height, Cell *
       if (neighbors.n_predators == 1)
       {
         uint8_t predator_level = neighbors.predator_levels[0];
-        uint8_t prey_level_minus_10 =
-            (current_cell.level >= 10) ? current_cell.level - 10 : 0;
+        uint8_t prey_level_minus_10 = (current_cell.level >= 10) ? current_cell.level - 10 : 0;
         if (predator_level > prey_level_minus_10)
         {
           current_cell.state = CellState::Empty;
@@ -216,8 +184,7 @@ __global__ void update_grid_cuda(const size_t width, const size_t height, Cell *
       }
 
       // Prey becomes Predator under certain conditions
-      if (!action_taken && neighbors.n_predators > 1 &&
-          current_cell.level < neighbors.sum_predator_levels)
+      if (!action_taken && neighbors.n_predators > 1 && current_cell.level < neighbors.sum_predator_levels)
       {
         current_cell.state = CellState::Predator;
         uint8_t max_level = neighbors.max_predator_level > neighbors.max_prey_level ? neighbors.max_predator_level : neighbors.max_prey_level;
@@ -226,8 +193,7 @@ __global__ void update_grid_cuda(const size_t width, const size_t height, Cell *
       }
 
       // Prey becomes Empty if no Empty neighbors
-      if (!action_taken && (neighbors.empty_neighbors == 0 or
-                            neighbors.n_preys > 3))
+      if (!action_taken && (neighbors.empty_neighbors == 0 || neighbors.n_preys > 3))
       {
         current_cell.state = CellState::Empty;
         current_cell.level = 0;
@@ -240,9 +206,7 @@ __global__ void update_grid_cuda(const size_t width, const size_t height, Cell *
         current_cell.state = CellState::Prey;
         if (neighbors.n_preys < 3)
         {
-          current_cell.level = static_cast<int>(current_cell.level + 1) <= 255
-                                   ? current_cell.level + 1
-                                   : 255;
+          current_cell.level = static_cast<int>(current_cell.level + 1) <= 255 ? current_cell.level + 1 : 255;
         }
         else
         {
@@ -281,13 +245,11 @@ __global__ void update_grid_cuda(const size_t width, const size_t height, Cell *
         {
           // Predator survives
           current_cell.state = CellState::Predator;
-          current_cell.level = static_cast<int>(current_cell.level + 1) <= 255
-                                   ? current_cell.level + 1
-                                   : 255;
-          ;
+          current_cell.level = static_cast<int>(current_cell.level + 1) <= 255 ? current_cell.level + 1 : 255;
         }
       }
     }
+    __syncthreads();
   }
 }
 
@@ -582,7 +544,7 @@ int main(int argc, char *argv[])
 
   const size_t NUM_ITERATIONS = 500; // Total number of iterations
 
-  const int nThreadsPerBlock = 64;
+  const int nThreadsPerBlock = 256;
   const int nBlocks = (width * height + nThreadsPerBlock - 1) / nThreadsPerBlock;
 
   size_t memSize = width * height * sizeof(Cell);
@@ -634,6 +596,7 @@ int main(int argc, char *argv[])
   // Save the final grid to a reference file
   save_grid_to_file(width, height, h_grid, reference_filename);
   std::cout << "Reference grid saved to " << reference_filename << '\n';
+  print_grid(width, height, h_grid);
 
   // Destroy the stream and free pinned host memory
   cudaStreamDestroy(queue);
