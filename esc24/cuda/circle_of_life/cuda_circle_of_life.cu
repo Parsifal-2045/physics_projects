@@ -86,8 +86,6 @@ __global__ void initialize_grid(const int width, const int height, Cell *cells, 
 
 struct NeighborData
 {
-  uint8_t predator_levels[9];
-  uint8_t prey_levels[9];
   uint8_t max_predator_level = 0;
   uint8_t max_prey_level = 0;
   int sum_predator_levels = 0;
@@ -113,14 +111,12 @@ __device__ NeighborData gather_neighbor_data(const int width, const int height, 
       const Cell &neighbor = grid[neighborIndex];
       if (neighbor.state == CellState::Predator)
       {
-        data.predator_levels[0] = neighbor.level;
         data.n_predators++;
         data.max_predator_level = data.max_predator_level > neighbor.level ? data.max_predator_level : neighbor.level;
         data.sum_predator_levels += neighbor.level;
       }
       else if (neighbor.state == CellState::Prey)
       {
-        data.prey_levels[0] = neighbor.level;
         data.n_preys++;
         data.max_prey_level = data.max_prey_level > neighbor.level ? data.max_prey_level : neighbor.level;
         data.sum_prey_levels += neighbor.level;
@@ -166,7 +162,7 @@ __global__ void update_grid_cuda(const size_t width, const size_t height, const 
       // Prey becomes Empty if single Predator with higher level
       if (neighbors.n_predators == 1)
       {
-        uint8_t predator_level = neighbors.predator_levels[0];
+        uint8_t predator_level = neighbors.max_predator_level;
         uint8_t prey_level_minus_10 = (current_cell.level >= 10) ? current_cell.level - 10 : 0;
         if (predator_level > prey_level_minus_10)
         {
@@ -226,15 +222,7 @@ __global__ void update_grid_cuda(const size_t width, const size_t height, const 
       }
       else
       {
-        bool all_prey_higher = true;
-        for (uint8_t prey_level : neighbors.prey_levels)
-        {
-          if (current_cell.level >= prey_level)
-          {
-            all_prey_higher = false;
-            break;
-          }
-        }
+        bool all_prey_higher = current_cell.level < neighbors.max_prey_level;
 
         if (all_prey_higher)
         {
