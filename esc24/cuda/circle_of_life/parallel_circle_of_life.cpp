@@ -1,4 +1,5 @@
 // Original Author: Felice Pantaleo (CERN), 2024
+// Adapted by: Luca Ferragina (CERN), 2024
 
 #include <algorithm>
 #include <cassert>
@@ -599,7 +600,6 @@ int main(int argc, char *argv[])
   else
   {
     // Save the final grid to a reference file
-    print_grid(grid);
     save_grid_to_file(grid, reference_filename);
     std::cout << "Reference grid saved to " << reference_filename << '\n';
   }
