@@ -1,4 +1,5 @@
 // Original Author: Felice Pantaleo (CERN), 2024
+// Adapted by: Luca Ferragina (CERN), 2024
 
 #include <algorithm>
 #include <cassert>
@@ -18,7 +19,7 @@
 // #include <syncstream>
 
 // Compile-time variable to control saving grids
-// constexpr bool SAVE_GRIDS = false; // Set to true to enable GIF output
+constexpr bool SAVE_GRIDS = false; // Set to true to enable GIF output
 
 void print_help()
 {
@@ -106,21 +107,20 @@ __device__ NeighborData gather_neighbor_data(const int width, const int height, 
     {
       if (dx == 0 && dy == 0)
         continue;
-      auto localIndex = x + dx + ((y + dy) * height);
       int nx = (x + dx + width) % width;
       int ny = (y + dy + height) % height;
       auto neighborIndex = nx + ny * height;
       const Cell &neighbor = grid[neighborIndex];
       if (neighbor.state == CellState::Predator)
       {
-        data.predator_levels[localIndex] = neighbor.level;
+        data.predator_levels[0] = neighbor.level;
         data.n_predators++;
         data.max_predator_level = data.max_predator_level > neighbor.level ? data.max_predator_level : neighbor.level;
         data.sum_predator_levels += neighbor.level;
       }
       else if (neighbor.state == CellState::Prey)
       {
-        data.prey_levels[localIndex] = neighbor.level;
+        data.prey_levels[0] = neighbor.level;
         data.n_preys++;
         data.max_prey_level = data.max_prey_level > neighbor.level ? data.max_prey_level : neighbor.level;
         data.sum_prey_levels += neighbor.level;
@@ -134,28 +134,29 @@ __device__ NeighborData gather_neighbor_data(const int width, const int height, 
   return data;
 }
 
-__global__ void update_grid_cuda(const size_t width, const size_t height, Cell *d_grid)
+__global__ void update_grid_cuda(const size_t width, const size_t height, const Cell *current_grid, Cell *new_grid)
 {
   auto index = threadIdx.x + blockIdx.x * blockDim.x;
   if (index < width * height)
   {
-    Cell &current_cell = d_grid[index];
-    NeighborData neighbors = gather_neighbor_data(width, height, d_grid, index % width, index / width);
+    const Cell &current_cell = current_grid[index];
+    Cell &new_cell = new_grid[index];
+    NeighborData neighbors = gather_neighbor_data(width, height, current_grid, index % width, index / width);
 
     if (current_cell.state == CellState::Empty)
     {
       // Empty cell becomes Prey if more than two Preys surround it
       if (neighbors.n_preys >= 2)
       {
-        current_cell.state = CellState::Prey;
+        new_cell.state = CellState::Prey;
         uint8_t max_prey_level = neighbors.max_prey_level;
-        current_cell.level = (max_prey_level < 255) ? max_prey_level + 1 : 255;
+        new_cell.level = (max_prey_level < 255) ? max_prey_level + 1 : 255;
       }
       else
       {
         // Remains Empty
-        current_cell.state = CellState::Empty;
-        current_cell.level = 0;
+        new_cell.state = CellState::Empty;
+        new_cell.level = 0;
       }
     }
     else if (current_cell.state == CellState::Prey)
@@ -169,8 +170,8 @@ __global__ void update_grid_cuda(const size_t width, const size_t height, Cell *
         uint8_t prey_level_minus_10 = (current_cell.level >= 10) ? current_cell.level - 10 : 0;
         if (predator_level > prey_level_minus_10)
         {
-          current_cell.state = CellState::Empty;
-          current_cell.level = 0;
+          new_cell.state = CellState::Empty;
+          new_cell.level = 0;
           action_taken = true;
         }
       }
@@ -178,39 +179,39 @@ __global__ void update_grid_cuda(const size_t width, const size_t height, Cell *
       // Prey becomes Empty if too many Preys surrounding it
       if (neighbors.n_preys > 2)
       {
-        current_cell.state = CellState::Empty;
-        current_cell.level = 0;
+        new_cell.state = CellState::Empty;
+        new_cell.level = 0;
         action_taken = true;
       }
 
       // Prey becomes Predator under certain conditions
       if (!action_taken && neighbors.n_predators > 1 && current_cell.level < neighbors.sum_predator_levels)
       {
-        current_cell.state = CellState::Predator;
+        new_cell.state = CellState::Predator;
         uint8_t max_level = neighbors.max_predator_level > neighbors.max_prey_level ? neighbors.max_predator_level : neighbors.max_prey_level;
-        current_cell.level = (max_level < 255) ? max_level + 1 : 255;
+        new_cell.level = (max_level < 255) ? max_level + 1 : 255;
         action_taken = true;
       }
 
       // Prey becomes Empty if no Empty neighbors
       if (!action_taken && (neighbors.empty_neighbors == 0 || neighbors.n_preys > 3))
       {
-        current_cell.state = CellState::Empty;
-        current_cell.level = 0;
+        new_cell.state = CellState::Empty;
+        new_cell.level = 0;
         action_taken = true;
       }
 
       // Prey survives
       if (!action_taken)
       {
-        current_cell.state = CellState::Prey;
+        new_cell.state = CellState::Prey;
         if (neighbors.n_preys < 3)
         {
-          current_cell.level = static_cast<int>(current_cell.level + 1) <= 255 ? current_cell.level + 1 : 255;
+          new_cell.level = static_cast<int>(current_cell.level + 1) <= 255 ? current_cell.level + 1 : 255;
         }
         else
         {
-          current_cell.level = current_cell.level;
+          new_cell.level = current_cell.level;
         }
       }
     }
@@ -220,8 +221,8 @@ __global__ void update_grid_cuda(const size_t width, const size_t height, Cell *
       if (neighbors.n_preys == 0)
       {
         // Predator dies
-        current_cell.state = CellState::Empty;
-        current_cell.level = 0;
+        new_cell.state = CellState::Empty;
+        new_cell.level = 0;
       }
       else
       {
@@ -238,14 +239,14 @@ __global__ void update_grid_cuda(const size_t width, const size_t height, Cell *
         if (all_prey_higher)
         {
           // Predator dies
-          current_cell.state = CellState::Empty;
-          current_cell.level = 0;
+          new_cell.state = CellState::Empty;
+          new_cell.level = 0;
         }
         else
         {
           // Predator survives
-          current_cell.state = CellState::Predator;
-          current_cell.level = static_cast<int>(current_cell.level + 1) <= 255 ? current_cell.level + 1 : 255;
+          new_cell.state = CellState::Predator;
+          new_cell.level = static_cast<int>(current_cell.level + 1) <= 255 ? current_cell.level + 1 : 255;
         }
       }
     }
@@ -320,36 +321,6 @@ void print_grid(const int width, const int height, const Cell *cells)
     std::cout << '\n';
   }
 }
-
-/*
-void print_grid(const Grid &grid)
-{
-  std::osyncstream out{std::cout};
-  // Clear the screen
-  out << "\033[2J\033[1;1H";
-
-  tbb::parallel_for(tbb::blocked_range2d<size_t, size_t>(0, grid.height_, 1, 0, grid.width_, 1), [&](const auto &range2d)
-                    {
-    for (auto i = range2d.rows().begin(); i != range2d.rows().end(); ++i){
-      for (auto j = range2d.cols().begin(); i != range2d.cols().end(); ++j){
-        int index =i + j*range2d.cols().end();
-        auto& cell = grid.cells_[index];
-        if (cell.state == CellState::Predator)
-      {
-        out << "\033[38;2;0;0;" << +cell.level << "mO\033[0m"; // Blue with intensity
-      }
-      else if (cell.state == CellState::Prey)
-      {
-        out << "\033[38;2;" << +cell.level << ";0;0mO\033[0m"; // Red with intensity
-      }
-      else
-      {
-        out << ' ';
-      }
-      }
-    } });
-}
-*/
 
 void save_grid_to_file(const int width, const int height, const Cell *cells, const std::string &filename)
 {
@@ -565,17 +536,7 @@ int main(int argc, char *argv[])
 
   // Initialize the grid
   initialize_grid<<<nBlocks, nThreadsPerBlock, 0, queue>>>(width, height, d_grid, d_rng);
-
-  // Simulation loop
-  auto start = std::chrono::high_resolution_clock::now();
-  for (size_t i = 0; i < NUM_ITERATIONS; ++i)
-  {
-    update_grid_cuda<<<nBlocks, nThreadsPerBlock, 0, queue>>>(width, height, d_grid);
-    // save_frame_as_gif(grid, writer);
-  }
-
-  // Copy results from device to host
-  cudaMemcpyAsync(h_grid, d_grid, memSize, cudaMemcpyDeviceToHost, queue);
+  cudaMemcpyAsync(d_new_grid, d_grid, memSize, cudaMemcpyDeviceToDevice, queue);
 
   // Generate reference filename
   std::string reference_filename =
@@ -584,82 +545,74 @@ int main(int argc, char *argv[])
       std::to_string(weight_predator) + "_" + std::to_string(weight_prey) +
       ".txt";
 
-  // Free device memory and synchronize
-  cudaFreeAsync(d_grid, queue);
-  cudaFreeAsync(d_new_grid, queue);
-  cudaStreamSynchronize(queue);
-
-  auto end = std::chrono::high_resolution_clock::now();
-  std::chrono::duration<double> elapsed_seconds = end - start;
-  std::cout << "Elapsed time of cuda version: " << elapsed_seconds.count() << "s\n";
-
-  // Save the final grid to a reference file
-  save_grid_to_file(width, height, h_grid, reference_filename);
-  std::cout << "Reference grid saved to " << reference_filename << '\n';
-  print_grid(width, height, h_grid);
-
-  // Destroy the stream and free pinned host memory
-  cudaStreamDestroy(queue);
-  cudaFreeHost(h_grid);
-
-  /*
-    // Initialize GIF writer
-    GifWriter writer = {};
-    if constexpr (SAVE_GRIDS)
+  // Initialize GIF writer
+  GifWriter writer = {};
+  if constexpr (SAVE_GRIDS)
+  {
+    // Set delay to 50 (hundredths of a second) for two iterations per second
+    if (!GifBegin(&writer, "simulation_cuda.gif", width, height, 50))
     {
-      // Set delay to 50 (hundredths of a second) for two iterations per second
-      if (!GifBegin(&writer, "simulation_tbb.gif", width, height, 50))
-      {
-        std::cerr << "Error: Failed to initialize GIF writer.\n";
-        return 1;
-      }
+      std::cerr << "Error: Failed to initialize GIF writer.\n";
+      return 1;
     }
-    */
+  }
 
-  /*
   // Simulation loop
   auto start = std::chrono::high_resolution_clock::now();
   for (size_t i = 0; i < NUM_ITERATIONS; ++i)
   {
-    update_grid_tbb(grid, new_grid);
-    save_frame_as_gif(grid, writer);
-    std::swap(grid, new_grid);
+    update_grid_cuda<<<nBlocks, nThreadsPerBlock, 0, queue>>>(width, height, d_grid, d_new_grid);
+    // save_frame_as_gif(grid, writer);
+    std::swap(d_grid, d_new_grid);
   }
+
+  // Copy results from device to host
+  cudaMemcpyAsync(h_grid, d_grid, memSize, cudaMemcpyDeviceToHost, queue);
+
+  // Wait for all operations to finish
+  cudaStreamSynchronize(queue);
   auto end = std::chrono::high_resolution_clock::now();
   std::chrono::duration<double> elapsed_seconds = end - start;
-  std::cout << "Elapsed time of tbb parallel version: " << elapsed_seconds.count() << "s\n";
+  std::cout << "Elapsed time of cuda version: " << elapsed_seconds.count() << "s\n";
 
   if constexpr (SAVE_GRIDS)
   {
     GifEnd(&writer);
     std::cout << "Simulation saved as 'simulation_tbb.gif'.\n";
   }
-
-  if (!verify_filename.empty())
-  {
-    // Load the reference grid and compare after simulation
-    Grid reference_grid(height, std::vector<Cell>(width));
-    if (!load_grid_from_file(reference_grid, verify_filename))
+  /*
+    if (!verify_filename.empty())
     {
-      return 1;
-    }
-    if (compare_grids(grid, reference_grid))
-    {
-      std::cout << "Verification successful: The grids match.\n";
+      // Load the reference grid and compare after simulation
+      Grid reference_grid(height, std::vector<Cell>(width));
+      if (!load_grid_from_file(reference_grid, verify_filename))
+      {
+        return 1;
+      }
+      if (compare_grids(grid, reference_grid))
+      {
+        std::cout << "Verification successful: The grids match.\n";
+      }
+      else
+      {
+        std::cerr << "Verification failed: The grids do not match.\n";
+        return 1;
+      }
     }
     else
-    {
-      std::cerr << "Verification failed: The grids do not match.\n";
-      return 1;
-    }
-  }
-  else
-  {
-    // Save the final grid to a reference file
-    save_grid_to_file(grid, reference_filename);
-    std::cout << "Reference grid saved to " << reference_filename << '\n';
-  }
-  */
+    */
+  //{
+  // Save the final grid to a reference file
+  save_grid_to_file(width, height, h_grid, reference_filename);
+  std::cout << "Reference grid saved to " << reference_filename << '\n';
+  //}
+
+  // Destroy the stream and free memory
+  // Free device memory
+  cudaFreeAsync(d_grid, queue);
+  cudaFreeAsync(d_new_grid, queue);
+  cudaStreamDestroy(queue);
+  cudaFreeHost(h_grid);
 
   return 0;
 }
