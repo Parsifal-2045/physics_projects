@@ -11,7 +11,7 @@ cuda:
 	nvcc cuda_circle_of_life.cu -o cuda_circle_of_life -O2 -std=c++20 -I gif-h -ltbb
 
 tbb:
-	g++ parallel_circle_of_life.cpp -std=c++20 -o parallel_circle_of_life -O2 -I gif-h -ltbb -Wno-return-type
+	g++ parallel_circle_of_life.cpp -std=c++20 -o parallel_circle_of_life -O2 -I gif-h -ltbb
 
 all: serial cuda tbb
 
