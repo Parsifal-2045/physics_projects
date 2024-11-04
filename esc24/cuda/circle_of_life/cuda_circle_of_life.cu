@@ -319,8 +319,7 @@ void save_grid_to_file(const int width, const int height, const Cell *cells, con
   }
 }
 
-/*
-bool load_grid_from_file(Grid &grid, const std::string &filename)
+bool load_grid_from_file(const size_t width, const size_t height, Cell *grid, const std::string &filename)
 {
   std::ifstream ifs(filename);
   if (!ifs.is_open())
@@ -329,10 +328,11 @@ bool load_grid_from_file(Grid &grid, const std::string &filename)
     return false;
   }
 
-  for (auto &row : grid)
+  for (size_t row = 0; row != height; ++row)
   {
-    for (auto &cell : row)
+    for (size_t col = 0; col != width; ++col)
     {
+      auto &cell = grid[col + row * width];
       int state_int;
       int level_int;
       ifs >> state_int >> level_int;
@@ -347,27 +347,34 @@ bool load_grid_from_file(Grid &grid, const std::string &filename)
   }
   return true;
 }
-*/
 
-/*
-bool compare_grids(const Grid &grid1, const Grid &grid2)
+bool compare_grids(const size_t width, const size_t height, const Cell *grid1, const Cell *grid2)
 {
-  size_t height = grid1.size();
-  size_t width = grid1[0].size();
+  bool mismatch = false;
 
-  tbb::parallel_for(tbb::blocked_range2d<size_t, size_t>(0, height, 1, 0, width, 1), [&](const auto &range2d)
-                    {
+  tbb::task_group tg;
+  tbb::task_group_status status = tg.run_and_wait([&]
+                                                  { tbb::parallel_for(tbb::blocked_range2d<size_t, size_t>(0, height, 1, 0, width, 1), [&](const auto &range2d)
+                                                                      {
     for (auto y = range2d.rows().begin(); y != range2d.rows().end(); ++y){
       for(auto x = range2d.cols().begin(); x != range2d.cols().end(); ++x){
-      if (grid1[y][x].state != grid2[y][x].state)
-        return false;
-      if (grid1[y][x].level != grid2[y][x].level)
-        return false;
+        
+        auto index = x + y * width;
+        if (grid1[index].state != grid2[index].state)
+          {
+            mismatch = true;
+            tg.cancel();
+          }
+        if (grid1[index].level != grid2[index].level)
+          {
+            mismatch = true;
+            tg.cancel();
+          }
       }
-    } });
-  return true;
+    } }); });
+
+  return !mismatch;
 }
-*/
 
 int main(int argc, char *argv[])
 {
@@ -565,32 +572,31 @@ int main(int argc, char *argv[])
     GifEnd(&writer);
     std::cout << "Simulation saved as 'simulation_cuda.gif'.\n";
   }
-  /*
-    if (!verify_filename.empty())
+
+  if (!verify_filename.empty())
+  {
+    // Load the reference grid and compare after simulation
+    std::unique_ptr<Cell[]> reference_grid = std::make_unique<Cell[]>(height * width);
+    if (!load_grid_from_file(width, height, reference_grid.get(), verify_filename))
     {
-      // Load the reference grid and compare after simulation
-      Grid reference_grid(height, std::vector<Cell>(width));
-      if (!load_grid_from_file(reference_grid, verify_filename))
-      {
-        return 1;
-      }
-      if (compare_grids(grid, reference_grid))
-      {
-        std::cout << "Verification successful: The grids match.\n";
-      }
-      else
-      {
-        std::cerr << "Verification failed: The grids do not match.\n";
-        return 1;
-      }
+      return 1;
+    }
+    if (compare_grids(width, height, h_grid, reference_grid.get()))
+    {
+      std::cout << "Verification successful: The grids match.\n";
     }
     else
-    */
-  //{
-  // Save the final grid to a reference file
-  save_grid_to_file(width, height, h_grid, reference_filename);
-  std::cout << "Reference grid saved to " << reference_filename << '\n';
-  //}
+    {
+      std::cerr << "Verification failed: The grids do not match.\n";
+      return 1;
+    }
+  }
+  else
+  {
+    // Save the final grid to a reference file
+    save_grid_to_file(width, height, h_grid, reference_filename);
+    std::cout << "Reference grid saved to " << reference_filename << '\n';
+  }
 
   // Destroy the stream and free memory
   // Free device memory
