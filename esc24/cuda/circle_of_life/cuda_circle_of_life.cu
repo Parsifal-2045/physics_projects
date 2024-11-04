@@ -15,8 +15,8 @@
 #include "gif-h/gif.h"
 
 // tbb
-// #include <tbb/tbb.h>
-// #include <syncstream>
+#include <tbb/tbb.h>
+#include <syncstream>
 
 // Compile-time variable to control saving grids
 constexpr bool SAVE_GRIDS = false; // Set to true to enable GIF output
@@ -242,21 +242,16 @@ __global__ void update_grid_cuda(const size_t width, const size_t height, const 
   }
 }
 
-/*
-void save_frame_as_gif(const Grid &grid, GifWriter &writer)
+void save_frame_as_gif(const size_t width, const size_t height, const Cell *grid, GifWriter &writer)
 {
-  if constexpr (SAVE_GRIDS)
-  {
-    int width = grid[0].size();
-    int height = grid.size();
-    std::vector<uint8_t> image(4 * width * height, 255); // RGBA image
+  std::vector<uint8_t> image(4 * width * height, 255); // RGBA image
 
-    tbb::parallel_for(tbb::blocked_range2d<int, int>(0, height, 1, 0, width, 1), [&](const auto &range2d)
-                      {
+  tbb::parallel_for(tbb::blocked_range2d<int, int>(0, height, 1, 0, width, 1), [&](const auto &range2d)
+                    {
       for (auto y = range2d.cols().begin(); y != range2d.cols().end(); ++y){
         for (auto x = range2d.rows().begin(); x != range2d.rows().end(); ++x){
           size_t idx = 4 * (y * width + x);
-        const Cell &cell = grid[y][x];
+        const Cell &cell = grid[y * width + x];
         if (cell.state == CellState::Predator)
         {
           image[idx] = 0;              // R
@@ -282,11 +277,9 @@ void save_frame_as_gif(const Grid &grid, GifWriter &writer)
         }
       } });
 
-    // Set delay to 50 (hundredths of a second) for two iterations per second
-    GifWriteFrame(&writer, image.data(), width, height, 50);
-  }
+  // Set delay to 50 (hundredths of a second) for two iterations per second
+  GifWriteFrame(&writer, image.data(), width, height, 50);
 }
-*/
 
 void print_grid(const int width, const int height, const Cell *cells)
 {
@@ -550,7 +543,11 @@ int main(int argc, char *argv[])
   for (size_t i = 0; i < NUM_ITERATIONS; ++i)
   {
     update_grid_cuda<<<nBlocks, nThreadsPerBlock, 0, queue>>>(width, height, d_grid, d_new_grid);
-    // save_frame_as_gif(grid, writer);
+    if constexpr (SAVE_GRIDS)
+    {
+      cudaMemcpy(h_grid, d_grid, memSize, cudaMemcpyDeviceToHost);
+      save_frame_as_gif(width, height, h_grid, writer);
+    }
     std::swap(d_grid, d_new_grid);
   }
 
@@ -566,7 +563,7 @@ int main(int argc, char *argv[])
   if constexpr (SAVE_GRIDS)
   {
     GifEnd(&writer);
-    std::cout << "Simulation saved as 'simulation_tbb.gif'.\n";
+    std::cout << "Simulation saved as 'simulation_cuda.gif'.\n";
   }
   /*
     if (!verify_filename.empty())
