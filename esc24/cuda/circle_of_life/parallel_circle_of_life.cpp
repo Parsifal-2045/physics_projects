@@ -92,12 +92,12 @@ Grid initialize_grid(size_t width, size_t height, int weight_empty,
 
   tbb::parallel_for(tbb::blocked_range2d<int, int>(0, height, 1, 0, width, 1), [&](const auto &range2d)
                     {
-                      for (auto i = range2d.cols().begin(); i != range2d.cols().end(); ++i)
+                      for (auto y = range2d.rows().begin();  y != range2d.rows().end(); ++y)
                       {
-                        for (auto j = range2d.rows().begin(); j != range2d.rows().end(); ++j)
+                        for (auto x = range2d.cols().begin(); x != range2d.cols().end(); ++x)
                         {
-                          auto &cell = grid[i][j];
-                          cell.state = static_cast<CellState>(cellValues[i * width + j]);
+                          auto &cell = grid[y][x];
+                          cell.state = static_cast<CellState>(cellValues[y * width + x]);
                           if (cell.state == CellState::Predator || cell.state == CellState::Prey)
                             cell.level = 50; // Initialize level to 50 for colored cells
                           else
@@ -302,8 +302,8 @@ void save_frame_as_gif(const Grid &grid, GifWriter &writer)
 
     tbb::parallel_for(tbb::blocked_range2d<int, int>(0, height, 1, 0, width, 1), [&](const auto &range2d)
                       {
-      for (auto y = range2d.cols().begin(); y != range2d.cols().end(); ++y){
-        for (auto x = range2d.rows().begin(); x != range2d.rows().end(); ++x){
+      for (auto y = range2d.rows().begin(); y != range2d.rows().end(); ++y){
+        for (auto x = range2d.cols().begin(); x != range2d.cols().end(); ++x){
           size_t idx = 4 * (y * width + x);
         const Cell &cell = grid[y][x];
         if (cell.state == CellState::Predator)
