@@ -107,7 +107,7 @@ __device__ NeighborData gather_neighbor_data(const int width, const int height, 
         continue;
       int nx = (x + dx + width) % width;
       int ny = (y + dy + height) % height;
-      auto neighborIndex = nx + ny * height;
+      auto neighborIndex = nx + ny * width;
       const Cell &neighbor = grid[neighborIndex];
       if (neighbor.state == CellState::Predator)
       {
@@ -248,8 +248,8 @@ void save_frame_as_gif(const size_t width, const size_t height, const Cell *grid
 
   tbb::parallel_for(tbb::blocked_range2d<int, int>(0, height, 1, 0, width, 1), [&](const auto &range2d)
                     {
-      for (auto y = range2d.cols().begin(); y != range2d.cols().end(); ++y){
-        for (auto x = range2d.rows().begin(); x != range2d.rows().end(); ++x){
+      for (auto y = range2d.rows().begin(); y != range2d.rows().end(); ++y){
+        for (auto x = range2d.cols().begin(); x != range2d.cols().end(); ++x){
           size_t idx = 4 * (y * width + x);
         const Cell &cell = grid[y * width + x];
         if (cell.state == CellState::Predator)
